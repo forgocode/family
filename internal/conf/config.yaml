@@ -1,0 +1,18 @@
+mysql:
+  ip: "mysql.test.com"
+  port: 3306
+  user: test
+  password: test
+  db: test
+
+redis:
+  ip: "redis.test.com"
+  port: 6379
+  password: "testredis"
+
+mongo:
+  ip: "mongo.test.com"
+  port: 27017
+  db: "mytest"
+  user: "root"
+  password: "testmongo"
