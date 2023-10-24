@@ -1,7 +1,7 @@
 package model
 
 type User struct {
-	UUID     string `json:"uuid" gorm:"column:uuid;index;comment:the uuid of user"`
+	UserID   int32  `json:"userID" gorm:"column:userID; index"`
 	UserName string `json:"userName" gorm:"column:userName;comment: the name of user"`
 	Password string `json:"-" gorm:"column:password; comment: the password of user"`
 	NickName string `json:"nickName" gorm:"column:nickName; comment: the nickName of user"`

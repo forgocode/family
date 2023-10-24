@@ -1,14 +1,19 @@
 package model
 
-type SystemLog struct {
-	CreateTime string `json:"createTime" bson:"createTime" gorm:"column:createTime"`
+import proto "github.com/forgocode/family/internal/grpcserver/proto/log"
+
+type OperationLogInfo struct {
+	CreateTime int64  `json:"createTime" bson:"createTime" gorm:"column:createTime"`
 	Msg        string `json:"msg" bson:"msg" gorm:"column:msg"`
 	Status     string `json:"status" bson:"status" gorm:"column:status"`
-	Type       string `json:"type" bson:"type" gorm:"type"`
+	Module     string `json:"module" bson:"module" gorm:"module"`
 	UserID     string `json:"userID" bson:"userID" gorm:"userID"`
 	UUID       string `json:"uuid" bson:"uuid" gorm:"uuid"`
 }
 
-func (SystemLog) TableName() string {
-	return "system_log"
+func (l *OperationLogInfo) Convert(info *proto.OperationLogInfo) {
+	l.Msg = info.Msg
+	l.CreateTime = info.CreateTime
+	l.UserID = info.User
+	l.Module = info.Module
 }

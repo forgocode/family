@@ -7,6 +7,7 @@ import (
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
+	"github.com/forgocode/family/internal/pkg/sendlog"
 	"github.com/forgocode/family/internal/webservice/middleware"
 	"github.com/forgocode/family/internal/webservice/model"
 )
@@ -17,8 +18,12 @@ type LoginInfo struct {
 }
 
 func Login(ctx *gin.Context) {
+	err := sendlog.SendOperationLog("10001", "en", sendlog.LoginCode)
+	if err != nil {
+		return
+	}
 	var info LoginInfo
-	err := ctx.ShouldBindJSON(&info)
+	err = ctx.ShouldBindJSON(&info)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct, "struct error")
 		return

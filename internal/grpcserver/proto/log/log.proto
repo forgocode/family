@@ -5,15 +5,14 @@ package log;
 option go_package="./;proto";
 
 service OperationLog{
-	rpc AddOperation(OperationLogInfo) returns(Response){}
+	rpc AddOperationLog(OperationLogInfo) returns(Response){}
 }
 
 message OperationLogInfo {
 	string User =1;
 	string Module =2;
-	string CreateTime = 3;
+	int64 CreateTime = 3;
 	string Msg = 4;
-	string UserType = 5;
 }
 
 message Response {
