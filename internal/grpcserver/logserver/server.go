@@ -1,0 +1,5 @@
+package logserver
+
+func Start() {
+
+}
