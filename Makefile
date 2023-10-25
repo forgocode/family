@@ -4,7 +4,14 @@ prepare:
 	@echo "192.168.0.202 mysql.test.com" >> /etc/hosts
 	@echo "192.168.0.202 redis.test.com" >> /etc/hosts
 	@echo "192.168.0.202 mongo.test.com" >> /etc/hosts
+	
+	@echo "10.182.34.112 mysql.test.com" >> /etc/hosts
+	@echo "10.182.34.112 redis.test.com" >> /etc/hosts
+	@echo "10.182.34.112 mongo.test.com" >> /etc/hosts
+
 	@echo "system prepare ready"
+
+	@cp ./internal/conf/config.yaml /root/tmp/.config.yaml
 
 .PHONY:
 loggrpc:

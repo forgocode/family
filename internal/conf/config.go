@@ -46,7 +46,9 @@ func GetConfig() Config {
 }
 
 var c *Config
-var configPath = "/root/goWorkspace/src/family/internal/conf/config.yaml"
+var configPath = "/root/tmp/.config.yaml"
+
+//var configPath = "/root/goWorkspace/src/family/internal/conf/config.yaml"
 
 var loadConfig sync.Once
 
