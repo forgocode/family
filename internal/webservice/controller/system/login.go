@@ -10,6 +10,7 @@ import (
 	"github.com/forgocode/family/internal/pkg/sendlog"
 	"github.com/forgocode/family/internal/webservice/middleware"
 	"github.com/forgocode/family/internal/webservice/model"
+	"github.com/forgocode/family/internal/webservice/service/system"
 )
 
 type LoginInfo struct {
@@ -18,12 +19,8 @@ type LoginInfo struct {
 }
 
 func Login(ctx *gin.Context) {
-	err := sendlog.SendOperationLog("10001", "en", sendlog.LoginCode)
-	if err != nil {
-		return
-	}
 	var info LoginInfo
-	err = ctx.ShouldBindJSON(&info)
+	err := ctx.ShouldBindJSON(&info)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct, "struct error")
 		return
@@ -36,19 +33,17 @@ func Login(ctx *gin.Context) {
 		Phone:    info.Phone,
 		Password: info.Passwd,
 	}
-	userName, ok := "", true
-	if userName == "" {
-		//response.Failed(ctx, response.ErrUserNameOrPassword)
+	userID, err := system.GetUserByPhone(user.Phone, user.Password)
+	if err != nil {
+		//登陆失败
 		return
 	}
-	ctx.Request.Header.Set("userName", userName)
-	if !ok {
-		//service.SendOperationLog(ctx, "Login", "登陆失败")
-		response.Failed(ctx, response.ErrUserNameOrPassword)
+	if userID == "" {
 		return
 	}
-	newlog.Logger.Infof("user <%s> login successfully\n", userName)
-	token, err := middleware.GenerateToken(user.Phone, userName)
+
+	newlog.Logger.Infof("user <%s> login successfully\n", userID)
+	token, err := middleware.GenerateToken(user.UserID, "", "")
 	if err != nil {
 		response.Failed(ctx, response.ErrUserNameOrPassword)
 		return
@@ -56,6 +51,10 @@ func Login(ctx *gin.Context) {
 	err = middleware.StoreToken(token)
 	if err != nil {
 		response.Failed(ctx, response.ErrRedis)
+		return
+	}
+	err = sendlog.SendOperationLog("10001", "en", sendlog.LoginCode)
+	if err != nil {
 		return
 	}
 	//service.SendOperationLog(ctx, "Login", "登陆成功")

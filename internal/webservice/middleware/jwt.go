@@ -18,8 +18,8 @@ const (
 )
 
 type Claims struct {
+	UserID   string
 	UserName string
-	Phone    string
 	Role     string
 	jwt.StandardClaims
 }
@@ -48,17 +48,18 @@ func Auth() gin.HandlerFunc {
 		}
 		ctx.Request.Header.Set("userName", claims.UserName)
 		ctx.Request.Header.Set("role", claims.Role)
-		ctx.Request.Header.Set("userID", claims.Phone)
+		ctx.Request.Header.Set("userID", claims.UserID)
 		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
 		ctx.Next()
 
 	}
 }
 
-func GenerateToken(phone, userName string) (string, error) {
+func GenerateToken(userID, role, userName string) (string, error) {
 	claim := &Claims{
 		UserName: userName,
-		Phone:    phone,
+		UserID:   userID,
+		Role:     role,
 	}
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claim).SignedString(JwtStr)
 }

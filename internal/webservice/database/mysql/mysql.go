@@ -11,7 +11,19 @@ import (
 	"github.com/forgocode/family/internal/conf"
 )
 
+type MysqlClient struct {
+	c *gorm.DB
+}
+
 var c *gorm.DB
+
+// TODO: 有问题
+func GetClient() *MysqlClient {
+	if c == nil {
+		c, _ = GetMysqlClient()
+	}
+	return &MysqlClient{c}
+}
 
 func GetMysqlClient() (*gorm.DB, error) {
 	if c == nil {

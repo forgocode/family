@@ -9,7 +9,7 @@ service OperationLog{
 }
 
 message OperationLogInfo {
-	string User =1;
+	string UserID =1;
 	string Module =2;
 	int64 CreateTime = 3;
 	string Msg = 4;

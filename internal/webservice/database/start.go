@@ -1,6 +1,8 @@
 package database
 
 import (
+	"strconv"
+
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/webservice/database/mysql"
 	"github.com/forgocode/family/internal/webservice/model"
@@ -24,7 +26,7 @@ func Start() {
 
 func createSuperAdminUser() {
 	u := model.User{
-		UserID:   userid.SuperAdministrator,
+		UserID:   strconv.Itoa(userid.SuperAdministrator),
 		UserName: "超级管理员",
 		Password: "123456",
 		NickName: "超级管理员",

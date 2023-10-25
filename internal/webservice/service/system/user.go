@@ -1,13 +1,13 @@
 package system
 
-import (
-	"github.com/forgocode/family/internal/webservice/model"
-)
+import "github.com/forgocode/family/internal/webservice/database/mysql"
 
-func Register(user model.User) error {
-	return nil
-}
+func GetUserByPhone(phone string, passwd string) (string, error) {
+	c := mysql.GetClient()
+	user, err := c.GetUserByPhone(phone, passwd)
+	if err != nil {
+		return "", err
+	}
 
-func Login(user model.User) error {
-	return nil
+	return user.UserID, nil
 }
