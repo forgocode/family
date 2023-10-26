@@ -57,7 +57,6 @@ func Login(ctx *gin.Context) {
 	if err != nil {
 		return
 	}
-	//service.SendOperationLog(ctx, "Login", "登陆成功")
 	ctx.JSON(
 		http.StatusOK,
 		gin.H{

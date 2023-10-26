@@ -9,6 +9,7 @@ import (
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
+	"github.com/forgocode/family/internal/webservice/database/redis"
 )
 
 var JwtStr = []byte("这是jwt认证密钥")
@@ -24,7 +25,8 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func Auth() gin.HandlerFunc {
+// 普通用户
+func AuthNormal() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.Request.Header.Get("token")
 		if token == "" {
@@ -55,6 +57,78 @@ func Auth() gin.HandlerFunc {
 	}
 }
 
+// 普通管理员用户
+func AuthAdmin() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		token := ctx.Request.Header.Get("token")
+		if token == "" {
+			ctx.Abort()
+			response.Failed(ctx, response.ErrAuth)
+			return
+		}
+		if !isTokenExist(token) {
+			ctx.Abort()
+			response.Failed(ctx, response.ErrAuth)
+			return
+		}
+		claims, err := parseToken(token)
+		if err != nil {
+			newlog.Logger.Errorf("failed to parse token, err:%+v\n", err)
+		}
+		if claims.Role != "admin" {
+			ctx.Abort()
+			return
+		}
+		if restoreToken(token) != nil {
+			ctx.Abort()
+			response.Failed(ctx, response.ErrRedis)
+			return
+		}
+
+		ctx.Request.Header.Set("userName", claims.UserName)
+		ctx.Request.Header.Set("role", claims.Role)
+		ctx.Request.Header.Set("userID", claims.UserID)
+		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
+		ctx.Next()
+	}
+}
+
+// 超级管理员用户
+func AuthSuperAdmin() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		token := ctx.Request.Header.Get("token")
+		if token == "" {
+			ctx.Abort()
+			response.Failed(ctx, response.ErrAuth)
+			return
+		}
+		if !isTokenExist(token) {
+			ctx.Abort()
+			response.Failed(ctx, response.ErrAuth)
+			return
+		}
+		claims, err := parseToken(token)
+		if err != nil {
+			newlog.Logger.Errorf("failed to parse token, err:%+v\n", err)
+		}
+		if claims.Role != "super_admin" {
+			ctx.Abort()
+			return
+		}
+		if restoreToken(token) != nil {
+			ctx.Abort()
+			response.Failed(ctx, response.ErrRedis)
+			return
+		}
+
+		ctx.Request.Header.Set("userName", claims.UserName)
+		ctx.Request.Header.Set("role", claims.Role)
+		ctx.Request.Header.Set("userID", claims.UserID)
+		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
+		ctx.Next()
+	}
+}
+
 func GenerateToken(userID, role, userName string) (string, error) {
 	claim := &Claims{
 		UserName: userName,
@@ -77,8 +151,11 @@ func parseToken(token string) (*Claims, error) {
 }
 
 func StoreToken(token string) error {
-	//return newlog.RedisClient.Set(token, nil, expiration).Err()
-	return nil
+	c, err := redis.GetRedisClient()
+	if err != nil {
+		return err
+	}
+	return c.Set(token, nil, expiration).Err()
 }
 
 func restoreToken(token string) error {
@@ -86,6 +163,9 @@ func restoreToken(token string) error {
 }
 
 func isTokenExist(token string) bool {
-	return true
-	//return newlog.RedisClient.Get(token).Err() == nil
+	c, err := redis.GetRedisClient()
+	if err != nil {
+		return false
+	}
+	return c.Get(token).Err() == nil
 }

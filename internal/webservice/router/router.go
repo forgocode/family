@@ -24,8 +24,10 @@ func Start() {
 	//普通用户
 	{
 		normalUserRouter := engine.Group("/normalUser")
-		normalUserRouter.Use()
-		//查看所有标签
+
+		// normalUserRouter.Use(middleware.AuthNormal())
+
+		//查看所有标签，已启用
 		normalUserRouter.GET("/tags")
 		//查看所有分类
 		normalUserRouter.GET("/category")
@@ -40,17 +42,26 @@ func Start() {
 	//管理员
 	{
 		adminRouter := engine.Group("/admin")
-		adminRouter.Use()
-		//新建用户（管理员？）
-		adminRouter.POST("/user/add")
+
+		// adminRouter.Use(middleware.AuthAdmin())
 		//(解)封禁用户
 		adminRouter.PUT("/user/ban")
+		//获取所有用户
+		adminRouter.GET("/user")
 
 		//新建标签
+		//获取所有标签，包括不启用的
+		adminRouter.GET("/tags")
 		adminRouter.POST("/tags")
+		//更新标签是否启用
+		adminRouter.PUT("/tags")
 		//删除标签
 		adminRouter.DELETE("/tags")
 
+		//获取所有标签，包括不启用的
+		adminRouter.GET("category")
+		//新建分类
+		adminRouter.POST("/category")
 		//新建分类
 		adminRouter.POST("/category")
 		//删除分类
@@ -63,6 +74,11 @@ func Start() {
 		adminRouter.GET("/systemLog")
 		//查看操作日志
 		adminRouter.GET("/operationLog")
+	}
+	//超级管理员
+	{
+
+		//管理员 管理
 	}
 	engine.Run(":8800")
 }
