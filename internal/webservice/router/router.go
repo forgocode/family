@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/forgocode/family/internal/webservice/controller/system"
+	"github.com/forgocode/family/internal/webservice/controller/user"
 	"github.com/forgocode/family/internal/webservice/middleware"
 )
 
@@ -47,7 +48,7 @@ func Start() {
 		//(解)封禁用户
 		adminRouter.PUT("/user/ban")
 		//获取所有用户
-		adminRouter.GET("/user")
+		adminRouter.GET("/user", user.NormalGetAllUser)
 
 		//新建标签
 		//获取所有标签，包括不启用的
@@ -63,7 +64,7 @@ func Start() {
 		//新建分类
 		adminRouter.POST("/category")
 		//新建分类
-		adminRouter.POST("/category")
+		adminRouter.PUT("/category")
 		//删除分类
 		adminRouter.DELETE("/category")
 

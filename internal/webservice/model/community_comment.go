@@ -5,7 +5,7 @@ type CommunityComment struct {
 	CommentID string `json:"commentID" bson:"commentID" gorm:"column:commentID"`
 	// 评论内容
 	Context    string `json:"context" bson:"context" gorm:"column:context"`
-	CreateTime string `json:"createTime" bson:"createTime" gorm:"column:createTime"`
+	CreateTime int64  `json:"createTime" bson:"createTime" gorm:"column:createTime"`
 	// 点赞数
 	LikeCount   int32  `json:"likeCount" bson:"likeCount" gorm:"column:likeCount"`
 	UnLikeCount int32  `json:"unLikeCount" bson:"unLikeCount" gorm:"column:unLikeCount"`

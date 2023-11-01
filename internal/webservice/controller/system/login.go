@@ -15,7 +15,7 @@ import (
 
 type LoginInfo struct {
 	Phone  string `json:"phone"`
-	Passwd string `json:"passwd"`
+	Passwd string `json:"password"`
 }
 
 func Login(ctx *gin.Context) {
@@ -33,12 +33,16 @@ func Login(ctx *gin.Context) {
 		Phone:    info.Phone,
 		Password: info.Passwd,
 	}
+	newlog.Logger.Infof("%+v\n", user)
 	userID, err := system.GetUserByPhone(user.Phone, user.Password)
 	if err != nil {
 		//登陆失败
+		response.Failed(ctx, response.ErrUserNameOrPassword)
 		return
 	}
+
 	if userID == "" {
+		response.Failed(ctx, response.ErrUserNameOrPassword, "user not exist")
 		return
 	}
 
@@ -53,9 +57,9 @@ func Login(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrRedis)
 		return
 	}
-	err = sendlog.SendOperationLog("10001", "en", sendlog.LoginCode)
+	err = sendlog.SendOperationLog(userID, "cn", sendlog.LoginCode)
 	if err != nil {
-		return
+		newlog.Logger.Errorf("failed to send operation log, err: %+v\n", err)
 	}
 	ctx.JSON(
 		http.StatusOK,
@@ -63,5 +67,6 @@ func Login(ctx *gin.Context) {
 			"code":  200,
 			"msg":   "handle successfully",
 			"token": token,
+			"role":  user.Role,
 		})
 }

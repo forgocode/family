@@ -1,6 +1,12 @@
 package user
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+
+	"github.com/forgocode/family/internal/pkg/newlog"
+	"github.com/forgocode/family/internal/pkg/response"
+	"github.com/forgocode/family/pkg/paginate"
+)
 
 func AdminGetUserInfo(ctx *gin.Context) {
 
@@ -20,4 +26,10 @@ func AdminDeleteUser(ctx *gin.Context) {
 
 func NormalGetAllUser(ctx *gin.Context) {
 
+	q, err := paginate.GetPageQuery(ctx)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	newlog.Logger.Infof("%+v\n", q)
 }

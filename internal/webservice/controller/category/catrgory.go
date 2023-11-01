@@ -1,19 +1,28 @@
 package category
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
 
-func NormalGetAllTag(ctx *gin.Context) {
+	"github.com/forgocode/family/internal/webservice/service/category"
+)
 
-}
-
-func AdminGetAllTag(ctx *gin.Context) {
-
-}
-
-func AdminUpdateTag(ctx *gin.Context) {
+func NormalGetAllCategory(ctx *gin.Context) {
 
 }
 
-func AdminDeleteTag(ctx *gin.Context) {
+func AdminGetAllCategory(ctx *gin.Context) {
 
+}
+
+func AdminUpdateCategory(ctx *gin.Context) {
+	category.AdminUpdateCategory("", true)
+}
+
+func AdminDeleteCategory(ctx *gin.Context) {
+	category.AdminDeleteCategory("")
+
+}
+
+func AdminCreateCategory(ctx *gin.Context) {
+	category.AdminCreateCategory(nil)
 }

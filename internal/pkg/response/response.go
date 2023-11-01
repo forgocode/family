@@ -11,5 +11,5 @@ func Success(ctx *gin.Context, result interface{}, total int, detail ...interfac
 }
 
 func Failed(ctx *gin.Context, errCode int32, detail ...interface{}) {
-	response.Failed(ctx, errCode, detail)
+	response.Failed(ctx, errCode, errCodeMap[errCode].msgCn, detail)
 }
