@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
+	"github.com/forgocode/family/internal/webservice/controller/category"
 	"github.com/forgocode/family/internal/webservice/controller/system"
 	"github.com/forgocode/family/internal/webservice/controller/user"
 	"github.com/forgocode/family/internal/webservice/middleware"
@@ -62,8 +63,8 @@ func Start() {
 		//获取所有标签，包括不启用的
 		adminRouter.GET("category")
 		//新建分类
-		adminRouter.POST("/category")
-		//新建分类
+		adminRouter.POST("/category", category.AdminCreateCategory)
+		//更新分类
 		adminRouter.PUT("/category")
 		//删除分类
 		adminRouter.DELETE("/category")
@@ -74,7 +75,7 @@ func Start() {
 		//查看系统日志
 		adminRouter.GET("/systemLog")
 		//查看操作日志
-		adminRouter.GET("/operationLog")
+		adminRouter.GET("/operationLog", system.AdminGetOperationLog)
 	}
 	//超级管理员
 	{

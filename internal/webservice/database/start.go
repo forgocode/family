@@ -15,7 +15,9 @@ func Start() {
 		return
 	}
 	err = c.AutoMigrate(
-		&model.User{})
+		&model.User{},
+		&model.Category{},
+	)
 	if err != nil {
 		newlog.Logger.Errorf("failed to auto migrate mysql table, err:%+v\n", err)
 		return
