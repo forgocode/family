@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
+	"github.com/forgocode/family/internal/webservice/service/system"
 	"github.com/forgocode/family/pkg/paginate"
 )
 
@@ -32,4 +33,10 @@ func NormalGetAllUser(ctx *gin.Context) {
 		return
 	}
 	newlog.Logger.Infof("%+v\n", q)
+	users, count, err := system.GetAllUser(q)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, users, count)
 }

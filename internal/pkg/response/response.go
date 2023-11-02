@@ -6,7 +6,7 @@ import (
 	"github.com/forgocode/family/pkg/response"
 )
 
-func Success(ctx *gin.Context, result interface{}, total int, detail ...interface{}) {
+func Success(ctx *gin.Context, result interface{}, total int64, detail ...interface{}) {
 	response.Success(ctx, result, total, detail)
 }
 

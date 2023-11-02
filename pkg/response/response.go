@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Success(ctx *gin.Context, result interface{}, total int, detail ...interface{}) {
+func Success(ctx *gin.Context, result interface{}, total int64, detail ...interface{}) {
 	ctx.JSON(
 		http.StatusOK,
 		gin.H{

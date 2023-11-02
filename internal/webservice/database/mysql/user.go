@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/forgocode/family/internal/webservice/model"
+	"github.com/forgocode/family/pkg/paginate"
 )
 
 func (c *MysqlClient) CreateUser(user *model.User) error {
@@ -24,6 +25,18 @@ func (c *MysqlClient) IsUserIDExist(userID string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func (c *MysqlClient) GetUserCount() (int64, error) {
+	var count int64
+	result := c.c.Model(&model.User{}).Count(&count)
+	return count, result.Error
+}
+
+func (c *MysqlClient) GetAllUser(q *paginate.PageQuery) ([]model.User, error) {
+	var users []model.User
+	result := c.c.Model(&model.User{}).Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&users)
+	return users, result.Error
 }
 
 func (c *MysqlClient) GetUserByPhone(phone, passwd string) (*model.User, error) {
