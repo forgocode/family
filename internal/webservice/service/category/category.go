@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/webservice/database/mysql"
 	"github.com/forgocode/family/internal/webservice/model"
+	"github.com/forgocode/family/pkg/paginate"
 	"github.com/forgocode/family/pkg/uuid"
 )
 
@@ -26,12 +27,21 @@ func (t *UICategory) Convert() *model.Category {
 }
 
 func NormalGetAllCategory() {
-	c := mysql.GetClient()
-	c.GetAllCategory()
+	//c := mysql.GetClient()
+	//c.GetAllCategory()
 }
 
-func AdminGetAllCategory() {
-
+func AdminGetAllCategory(q *paginate.PageQuery) ([]model.Category, int64, error) {
+	c := mysql.GetClient()
+	cates, err := c.GetAllCategory(q)
+	if err != nil {
+		return nil, 0, err
+	}
+	count, err := c.GetCategoryCount()
+	if err != nil {
+		return nil, 0, err
+	}
+	return cates, count, nil
 }
 
 func AdminCreateCategory(Category *UICategory) error {

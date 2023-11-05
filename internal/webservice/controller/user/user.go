@@ -3,7 +3,6 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
 	"github.com/forgocode/family/internal/webservice/service/system"
 	"github.com/forgocode/family/pkg/paginate"
@@ -32,7 +31,6 @@ func NormalGetAllUser(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	newlog.Logger.Infof("%+v\n", q)
 	users, count, err := system.GetAllUser(q)
 	if err != nil {
 		response.Failed(ctx, response.ErrDB)

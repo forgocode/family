@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/webservice/controller/category"
 	"github.com/forgocode/family/internal/webservice/controller/system"
+	"github.com/forgocode/family/internal/webservice/controller/tag"
 	"github.com/forgocode/family/internal/webservice/controller/user"
 	"github.com/forgocode/family/internal/webservice/middleware"
 )
@@ -53,21 +54,21 @@ func Start() {
 
 		//新建标签
 		//获取所有标签，包括不启用的
-		adminRouter.GET("/tags")
-		adminRouter.POST("/tags")
+		adminRouter.GET("/tags", tag.AdminGetAllTag)
+		adminRouter.POST("/tags", tag.AdminCreateTag)
 		//更新标签是否启用
 		adminRouter.PUT("/tags")
 		//删除标签
-		adminRouter.DELETE("/tags")
+		adminRouter.DELETE("/tags", tag.AdminDeleteTag)
 
 		//获取所有标签，包括不启用的
-		adminRouter.GET("category")
+		adminRouter.GET("category", category.AdminGetAllCategory)
 		//新建分类
 		adminRouter.POST("/category", category.AdminCreateCategory)
 		//更新分类
 		adminRouter.PUT("/category")
 		//删除分类
-		adminRouter.DELETE("/category")
+		adminRouter.DELETE("/category", category.AdminDeleteCategory)
 
 		//审核所有文章，封禁文章
 		adminRouter.PUT("/article")

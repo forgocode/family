@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/webservice/database/mysql"
 	"github.com/forgocode/family/internal/webservice/model"
+	"github.com/forgocode/family/pkg/paginate"
 	"github.com/forgocode/family/pkg/uuid"
 )
 
@@ -26,12 +27,21 @@ func (t *UITag) Convert() *model.Tag {
 }
 
 func NormalGetAllTag() {
-	c := mysql.GetClient()
-	c.GetAllTag()
+	//c := mysql.GetClient()
+	//c.GetAllTag()
 }
 
-func AdminGetAllTag() {
-
+func AdminGetAllTag(q *paginate.PageQuery) ([]model.Tag, int64, error) {
+	c := mysql.GetClient()
+	tags, err := c.GetAllTag(q)
+	if err != nil {
+		return nil, 0, err
+	}
+	count, err := c.GetTagCount()
+	if err != nil {
+		return nil, 0, err
+	}
+	return tags, count, nil
 }
 
 func AdminCreateTag(tag *UITag) error {
