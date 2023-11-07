@@ -19,7 +19,7 @@ func (c *MysqlClient) UpdateTagNotShow(uuid string) error {
 
 func (c *MysqlClient) GetAllTag(q *paginate.PageQuery) ([]model.Tag, error) {
 	var tags []model.Tag
-	result := c.c.Model(&model.Tag{}).Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&tags)
+	result := c.c.Model(&model.Tag{}).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&tags)
 	return tags, result.Error
 
 }

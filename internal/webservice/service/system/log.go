@@ -29,7 +29,7 @@ func GetOperationLog(q *paginate.PageQuery) ([]model.OperationLogInfo, int64, er
 	opt.SetLimit(int64(q.PageSize))
 	opt.SetSkip(int64((q.Page - 1) * q.PageSize))
 	opt.SetSort(bson.D{{
-		"createTime", 1}})
+		"createTime", -1}})
 	result, err := collection.Find(ctx, bson.D{}, opt)
 	if err != nil {
 

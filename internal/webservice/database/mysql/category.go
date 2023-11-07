@@ -19,7 +19,7 @@ func (c *MysqlClient) UpdateCategoryNotShow(uuid string) error {
 
 func (c *MysqlClient) GetAllCategory(q *paginate.PageQuery) ([]model.Category, error) {
 	var cates []model.Category
-	result := c.c.Model(&model.Category{}).Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&cates)
+	result := c.c.Model(&model.Category{}).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&cates)
 	return cates, result.Error
 
 }
