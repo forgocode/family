@@ -44,7 +44,7 @@ func Start() {
 		//新建评论
 		normalUserRouter.POST("/comment", comment.UserCreateComment)
 		// 获取评论
-		normalUserRouter.GET("/comment")
+		normalUserRouter.GET("/comment", comment.UserGetComment)
 
 	}
 

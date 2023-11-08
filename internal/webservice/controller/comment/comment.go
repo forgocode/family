@@ -24,5 +24,10 @@ func UserCreateComment(ctx *gin.Context) {
 }
 
 func UserGetComment(ctx *gin.Context) {
-
+	comments, err := commentService.UserGetComment()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, comments, 1)
 }
