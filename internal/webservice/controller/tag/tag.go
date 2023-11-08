@@ -29,26 +29,46 @@ func AdminGetAllTag(ctx *gin.Context) {
 }
 
 func AdminUpdateTag(ctx *gin.Context) {
-	tag.AdminUpdateTag("", true)
-}
-
-func AdminDeleteTag(ctx *gin.Context) {
-	uuid := ""
-	err := ctx.ShouldBind(&uuid)
+	type tmpT struct {
+		Uuid   string `json:"uuid"`
+		IsShow bool   `json:"isShow"`
+	}
+	info := &tmpT{}
+	err := ctx.ShouldBind(&info)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	err = tag.AdminDeleteTag(uuid)
+	err = tag.AdminUpdateTag(info.Uuid, info.IsShow)
 	if err != nil {
-		newlog.Logger.Errorf("failed to delete tag: %+v, err: %+v\n", uuid, err)
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, "update successfully", 1)
+
+}
+
+func AdminDeleteTag(ctx *gin.Context) {
+	type tmpT struct {
+		Uuid string `json:"uuid"`
+		Name string `json:"name"`
+	}
+	info := &tmpT{}
+	err := ctx.ShouldBind(&info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	err = tag.AdminDeleteTag(info.Uuid)
+	if err != nil {
+		newlog.Logger.Errorf("failed to delete tag: %+v, err: %+v\n", info, err)
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
 	//TODO: 有问题
-	err = sendlog.SendOperationLog("root", "cn", sendlog.DeleteTag, uuid)
+	err = sendlog.SendOperationLog("root", "cn", sendlog.DeleteTag, info.Name)
 	if err != nil {
-		newlog.Logger.Errorf("failed to send operation log: %+v, err: %+v\n", uuid, err)
+		newlog.Logger.Errorf("failed to send operation log: %+v, err: %+v\n", info, err)
 	}
 	response.Success(ctx, "delete successfully", 1)
 }

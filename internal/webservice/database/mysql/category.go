@@ -10,11 +10,11 @@ func (c *MysqlClient) CreateCategory(cate *model.Category) error {
 }
 
 func (c *MysqlClient) UpdateCategoryShow(uuid string) error {
-	return c.c.Where("uuid = ?", uuid).Update("isShow", true).Error
+	return c.c.Model(&model.Category{}).Where("uuid = ?", uuid).Update("isShow", true).Error
 }
 
 func (c *MysqlClient) UpdateCategoryNotShow(uuid string) error {
-	return c.c.Where("uuid = ?", uuid).Update("isShow", false).Error
+	return c.c.Model(&model.Category{}).Where("uuid = ?", uuid).Update("isShow", false).Error
 }
 
 func (c *MysqlClient) GetAllCategory(q *paginate.PageQuery) ([]model.Category, error) {

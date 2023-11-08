@@ -30,24 +30,44 @@ func AdminGetAllCategory(ctx *gin.Context) {
 }
 
 func AdminUpdateCategory(ctx *gin.Context) {
-	category.AdminUpdateCategory("", true)
+	type tmpT struct {
+		Uuid   string `json:"uuid"`
+		IsShow bool   `json:"isShow"`
+	}
+	info := &tmpT{}
+	err := ctx.ShouldBind(&info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	category.AdminUpdateCategory(info.Uuid, info.IsShow)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, "update successfully", 1)
+
 }
 
 func AdminDeleteCategory(ctx *gin.Context) {
-	uuid := ""
-	err := ctx.ShouldBind(&uuid)
+	type cate struct {
+		Uuid string `json:"uuid"`
+		Name string `json:"name"`
+	}
+	info := &cate{}
+	err := ctx.ShouldBindJSON(info)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	err = category.AdminDeleteCategory(uuid)
+	err = category.AdminDeleteCategory(info.Uuid)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	err = sendlog.SendOperationLog("root", "cn", sendlog.DeleteCategory, uuid)
+	err = sendlog.SendOperationLog("root", "cn", sendlog.DeleteCategory, info.Name)
 	if err != nil {
-		newlog.Logger.Errorf("failed to send operation log: %+v, err: %+v\n", uuid, err)
+		newlog.Logger.Errorf("failed to send operation log: %+v, err: %+v\n", info, err)
 	}
 	response.Success(ctx, "delete successfully", 1)
 

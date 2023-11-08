@@ -57,7 +57,7 @@ func Start() {
 		adminRouter.GET("/tags", tag.AdminGetAllTag)
 		adminRouter.POST("/tags", tag.AdminCreateTag)
 		//更新标签是否启用
-		adminRouter.PUT("/tags")
+		adminRouter.PUT("/tags", tag.AdminUpdateTag)
 		//删除标签
 		adminRouter.DELETE("/tags", tag.AdminDeleteTag)
 
@@ -66,7 +66,7 @@ func Start() {
 		//新建分类
 		adminRouter.POST("/category", category.AdminCreateCategory)
 		//更新分类
-		adminRouter.PUT("/category")
+		adminRouter.PUT("/category", category.AdminUpdateCategory)
 		//删除分类
 		adminRouter.DELETE("/category", category.AdminDeleteCategory)
 

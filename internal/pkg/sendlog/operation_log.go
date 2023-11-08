@@ -48,26 +48,26 @@ var msgMap = map[int32]msgStruct{
 	NewCategory: {
 		ModuleCN: CategoryCN,
 		ModuleEN: CategoryEN,
-		MsgCN:    "新建分类[%s]",
-		MsgEN:    "new category [%s]",
+		MsgCN:    "新建分类 %s",
+		MsgEN:    "new category %s",
 	},
 	DeleteCategory: {
 		ModuleCN: CategoryCN,
 		ModuleEN: CategoryEN,
-		MsgCN:    "删除分类[%s]",
-		MsgEN:    "delete category [%s]",
+		MsgCN:    "删除分类 %s",
+		MsgEN:    "delete category %s",
 	},
 	NewTag: {
 		ModuleCN: TagCN,
 		ModuleEN: TagEN,
-		MsgCN:    "新建标签[%s]",
-		MsgEN:    "new category [%s]",
+		MsgCN:    "新建标签 %s",
+		MsgEN:    "new category %s",
 	},
 	DeleteTag: {
 		ModuleCN: TagCN,
 		ModuleEN: TagEN,
-		MsgCN:    "删除标签[%s]",
-		MsgEN:    "delete tag [%s]",
+		MsgCN:    "删除标签 %s",
+		MsgEN:    "delete tag %s",
 	},
 }
 

@@ -10,11 +10,11 @@ func (c *MysqlClient) CreateTag(cate *model.Tag) error {
 }
 
 func (c *MysqlClient) UpdateTagShow(uuid string) error {
-	return c.c.Where("uuid = ?", uuid).Update("isShow", true).Error
+	return c.c.Model(&model.Tag{}).Where("uuid = ?", uuid).Update("isShow", true).Error
 }
 
 func (c *MysqlClient) UpdateTagNotShow(uuid string) error {
-	return c.c.Where("uuid = ?", uuid).Update("isShow", false).Error
+	return c.c.Model(&model.Tag{}).Where("uuid = ?", uuid).Update("isShow", false).Error
 }
 
 func (c *MysqlClient) GetAllTag(q *paginate.PageQuery) ([]model.Tag, error) {
