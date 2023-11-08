@@ -26,18 +26,18 @@ func (t *UICategory) Convert() *model.Category {
 
 }
 
-func NormalGetAllCategory() {
+func NormalGetAllCategory() ([]model.Category, error) {
+	return normalGetAllCategory()
 	//c := mysql.GetClient()
 	//c.GetAllCategory()
 }
 
 func AdminGetAllCategory(q *paginate.PageQuery) ([]model.Category, int64, error) {
-	c := mysql.GetClient()
-	cates, err := c.GetAllCategory(q)
+	cates, err := getAllCategory(q)
 	if err != nil {
 		return nil, 0, err
 	}
-	count, err := c.GetCategoryCount()
+	count, err := getCategoryCount()
 	if err != nil {
 		return nil, 0, err
 	}
@@ -45,20 +45,59 @@ func AdminGetAllCategory(q *paginate.PageQuery) ([]model.Category, int64, error)
 }
 
 func AdminCreateCategory(Category *UICategory) error {
-	c := mysql.GetClient()
-
-	return c.CreateCategory(Category.Convert())
+	return createCategory(Category.Convert())
 }
 
 func AdminDeleteCategory(uuid string) error {
-	c := mysql.GetClient()
-	return c.DeleteCategory(uuid)
+
+	return deleteCategory(uuid)
 }
 
 func AdminUpdateCategory(uuid string, isShow bool) error {
-	c := mysql.GetClient()
+
 	if isShow {
-		return c.UpdateCategoryShow(uuid)
+		return updateCategoryShow(uuid)
 	}
-	return c.UpdateCategoryNotShow(uuid)
+	return updateCategoryNotShow(uuid)
+}
+
+func createCategory(cate *model.Category) error {
+	c := mysql.GetClient()
+	return c.C.Create(cate).Error
+}
+
+func updateCategoryShow(uuid string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Category{}).Where("uuid = ?", uuid).Update("isShow", true).Error
+}
+
+func updateCategoryNotShow(uuid string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Category{}).Where("uuid = ?", uuid).Update("isShow", false).Error
+}
+
+func getAllCategory(q *paginate.PageQuery) ([]model.Category, error) {
+	c := mysql.GetClient()
+	var cates []model.Category
+	result := c.C.Model(&model.Category{}).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&cates)
+	return cates, result.Error
+
+}
+func getCategoryCount() (int64, error) {
+	c := mysql.GetClient()
+	var count int64
+	result := c.C.Model(&model.Category{}).Count(&count)
+	return count, result.Error
+}
+
+func deleteCategory(uuid string) error {
+	c := mysql.GetClient()
+	return c.C.Where("uuid = ?", uuid).Delete(&model.Category{}).Error
+}
+
+func normalGetAllCategory() ([]model.Category, error) {
+	c := mysql.GetClient()
+	var cates []model.Category
+	result := c.C.Model(&model.Category{}).Where("isShow = true").Order("createTime desc").Find(&cates)
+	return cates, result.Error
 }

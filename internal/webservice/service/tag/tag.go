@@ -26,39 +26,76 @@ func (t *UITag) Convert() *model.Tag {
 
 }
 
-func NormalGetAllTag() {
-	//c := mysql.GetClient()
-	//c.GetAllTag()
+func NormalGetAllTag() ([]model.Tag, error) {
+	return normalGetAllTag()
 }
 
 func AdminGetAllTag(q *paginate.PageQuery) ([]model.Tag, int64, error) {
-	c := mysql.GetClient()
-	tags, err := c.GetAllTag(q)
+
+	tags, err := adminGetAllTag(q)
 	if err != nil {
 		return nil, 0, err
 	}
-	count, err := c.GetTagCount()
+	count, err := getTagCount()
 	if err != nil {
 		return nil, 0, err
 	}
 	return tags, count, nil
 }
 
-func AdminCreateTag(tag *UITag) error {
+func adminGetAllTag(q *paginate.PageQuery) ([]model.Tag, error) {
 	c := mysql.GetClient()
+	var tags []model.Tag
+	result := c.C.Model(&model.Tag{}).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&tags)
+	return tags, result.Error
+}
 
-	return c.CreateTag(tag.Convert())
+func getTagCount() (int64, error) {
+	c := mysql.GetClient()
+	var count int64
+	result := c.C.Model(&model.Tag{}).Count(&count)
+	return count, result.Error
+}
+
+func AdminCreateTag(tag *UITag) error {
+	return createTag(tag.Convert())
+}
+
+func createTag(tag *model.Tag) error {
+	c := mysql.GetClient()
+	return c.C.Create(tag).Error
 }
 
 func AdminDeleteTag(uuid string) error {
+	return deleteTag(uuid)
+}
+
+func deleteTag(uuid string) error {
 	c := mysql.GetClient()
-	return c.DeleteTag(uuid)
+	return c.C.Where("uuid = ?", uuid).Delete(&model.Tag{}).Error
 }
 
 func AdminUpdateTag(uuid string, isShow bool) error {
-	c := mysql.GetClient()
+
 	if isShow {
-		return c.UpdateTagShow(uuid)
+		return updateTagShow(uuid)
 	}
-	return c.UpdateTagNotShow(uuid)
+	return updateTagNotShow(uuid)
+}
+
+func updateTagShow(uuid string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Tag{}).Where("uuid = ?", uuid).Update("isShow", true).Error
+}
+
+func updateTagNotShow(uuid string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Tag{}).Where("uuid = ?", uuid).Update("isShow", false).Error
+}
+
+func normalGetAllTag() ([]model.Tag, error) {
+	c := mysql.GetClient()
+	var tags []model.Tag
+	result := c.C.Model(&model.Tag{}).Where("isShow = true").Order("createTime desc").Find(&tags)
+	return tags, result.Error
 }

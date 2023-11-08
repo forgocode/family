@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/forgocode/family/internal/webservice/controller/category"
+	"github.com/forgocode/family/internal/webservice/controller/comment"
 	"github.com/forgocode/family/internal/webservice/controller/system"
 	"github.com/forgocode/family/internal/webservice/controller/tag"
 	"github.com/forgocode/family/internal/webservice/controller/user"
@@ -31,15 +32,20 @@ func Start() {
 		// normalUserRouter.Use(middleware.AuthNormal())
 
 		//查看所有标签，已启用
-		normalUserRouter.GET("/tags")
+		normalUserRouter.GET("/tags", tag.NormalGetAllTag)
 		//查看所有分类
-		normalUserRouter.GET("/category")
+		normalUserRouter.GET("/category", category.NormalGetAllCategory)
 		//新建文章
 		normalUserRouter.POST("/article")
 		//删除文章
 		normalUserRouter.DELETE("/article")
 		//更新文章，可隐藏
 		normalUserRouter.PUT("/article")
+		//新建评论
+		normalUserRouter.POST("/comment", comment.UserCreateComment)
+		// 获取评论
+		normalUserRouter.GET("/comment")
+
 	}
 
 	//管理员

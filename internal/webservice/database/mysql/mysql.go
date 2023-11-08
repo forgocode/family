@@ -12,7 +12,7 @@ import (
 )
 
 type MysqlClient struct {
-	c *gorm.DB
+	C *gorm.DB
 }
 
 var c *gorm.DB

@@ -11,6 +11,12 @@ import (
 )
 
 func NormalGetAllTag(ctx *gin.Context) {
+	tags, err := tag.NormalGetAllTag()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, tags, int64(len(tags)))
 
 }
 

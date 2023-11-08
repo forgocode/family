@@ -11,6 +11,12 @@ import (
 )
 
 func NormalGetAllCategory(ctx *gin.Context) {
+	cates, err := category.NormalGetAllCategory()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, cates, int64(len(cates)))
 
 }
 
