@@ -31,6 +31,9 @@ func Start() {
 
 		// normalUserRouter.Use(middleware.AuthNormal())
 
+		//获取用户的所有个人信息
+		normalUserRouter.GET("info")
+
 		//查看所有标签，已启用
 		normalUserRouter.GET("/tags", tag.NormalGetAllTag)
 		//查看所有分类
@@ -45,6 +48,8 @@ func Start() {
 		normalUserRouter.POST("/comment", comment.UserCreateComment)
 		// 获取评论
 		normalUserRouter.GET("/comment", comment.UserGetComment)
+		// 赞评论
+		normalUserRouter.PUT("/comment")
 
 	}
 

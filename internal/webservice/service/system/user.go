@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"time"
 
 	"github.com/forgocode/family/internal/webservice/database/mysql"
 	"github.com/forgocode/family/internal/webservice/model"
@@ -29,6 +30,11 @@ func GetAllUser(q *paginate.PageQuery) ([]model.User, int64, error) {
 		return nil, 0, err
 	}
 	return users, count, nil
+}
+
+func UpdateUserLastLogin(userID string) error {
+	u := model.User{UserID: userID, LastLoginTime: time.Now().UnixMilli()}
+	return updateUserInfo(u)
 }
 
 func createUser(user *model.User) error {
@@ -105,11 +111,10 @@ func deleteUser(userID string) error {
 	return result.Error
 }
 
-//需要更新哪个就赋值哪个字段
-
+// 需要更新哪个就赋值哪个字段
 func updateUserInfo(user model.User) error {
 	c := mysql.GetClient()
-	result := c.C.Where("userID = ?").Updates(user)
+	result := c.C.Where("userID = ?", user.UserID).Updates(user)
 	return result.Error
 
 }

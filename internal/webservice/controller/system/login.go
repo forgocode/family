@@ -45,6 +45,10 @@ func Login(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrUserNameOrPassword, "user not exist")
 		return
 	}
+	if system.UpdateUserLastLogin(userID) != nil {
+		response.Failed(ctx, response.ErrDB, "")
+		return
+	}
 
 	newlog.Logger.Infof("user <%s> login successfully\n", userID)
 	token, err := middleware.GenerateToken(user.UserID, "", "")

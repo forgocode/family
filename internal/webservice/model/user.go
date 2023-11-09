@@ -12,8 +12,9 @@ type User struct {
 	Phone         string `json:"phone" gorm:"column:phone; comment: the phone of user"`
 	Email         string `json:"email" gorm:"column:email; comment: the email of user"`
 	Status        int    `json:"status" gorm:"column:status; comment: the status of user"`
-	CreateTime    int64  `bson:"createTime" gorm:"column:createTime"`
-	LastLoginTime int64  `bson:"lastLoginTime" gorm:"column:lastLoginTime"`
+	CreateTime    int64  `json:"createTime" bson:"createTime" gorm:"column:createTime"`
+	LastLoginTime int64  ` json:"lastLoginTime" bson:"lastLoginTime" gorm:"column:lastLoginTime"`
+	Score         int64  `json:"score" bson:"score" gorm:"column:score"`
 }
 
 const (
