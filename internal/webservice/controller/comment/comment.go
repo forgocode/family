@@ -14,6 +14,10 @@ func UserCreateComment(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
+	if com.Context == "" {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
 	com.AuthorID = "10000000"
 	err = commentService.UserCreateComment(com)
 	if err != nil {

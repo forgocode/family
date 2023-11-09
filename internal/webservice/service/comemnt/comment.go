@@ -29,15 +29,17 @@ type UIComment struct {
 
 func (c *UIComment) Convert() *model.CommunityComment {
 	return &model.CommunityComment{
-		AuthorID:    c.AuthorID,
-		CommentID:   uuid.GetUUID(),
-		Context:     c.Context,
-		CreateTime:  time.Now().UnixMilli(),
-		LikeCount:   0,
-		UnLikeCount: 0,
-		ParentID:    c.ParentID,
-		IsShow:      true,
-		IsFirst:     false,
+		AuthorID:     c.AuthorID,
+		CommentID:    uuid.GetUUID(),
+		Context:      c.Context,
+		CreateTime:   time.Now().UnixMilli(),
+		LikeCount:    0,
+		UnLikeCount:  0,
+		ParentID:     c.ParentID,
+		IsShow:       true,
+		IsFirst:      false,
+		TopCommentID: c.TopCommentID,
+		ReplayTo:     c.ReplayTo,
 	}
 }
 
@@ -53,17 +55,18 @@ func UserGetComment() ([]UIComment, error) {
 	}
 	for _, fc := range first {
 		f := UIComment{
-			User:        fc.AuthorID,
-			Context:     fc.Context,
-			AuthorID:    fc.AuthorID,
-			CommentID:   fc.CommentID,
-			CreateTime:  fc.CreateTime,
-			LikeCount:   fc.LikeCount,
-			UnLikeCount: fc.UnLikeCount,
-			ParentID:    fc.ParentID,
-			IsShow:      fc.IsShow,
-			IsFirst:     fc.IsFirst,
-			Child:       nil,
+			User:         fc.AuthorID,
+			Context:      fc.Context,
+			AuthorID:     fc.AuthorID,
+			CommentID:    fc.CommentID,
+			CreateTime:   fc.CreateTime,
+			LikeCount:    fc.LikeCount,
+			UnLikeCount:  fc.UnLikeCount,
+			ParentID:     fc.ParentID,
+			IsShow:       fc.IsShow,
+			IsFirst:      fc.IsFirst,
+			TopCommentID: fc.TopCommentID,
+			Child:        nil,
 		}
 		second, err := findSecondLevelComment(fc.CommentID, fc.CommentID)
 		if err != nil {
@@ -103,6 +106,7 @@ func UserGetComment() ([]UIComment, error) {
 					IsShow:      v.IsShow,
 					IsFirst:     v.IsFirst,
 					Child:       nil,
+					ReplayTo:    v.ReplayTo,
 				}
 				s.Child = append(s.Child, t)
 			}
