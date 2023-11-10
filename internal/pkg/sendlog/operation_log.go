@@ -25,6 +25,9 @@ const (
 
 	NewTag
 	DeleteTag
+
+	NewTopic
+	DeleteTopic
 )
 
 const (
@@ -35,6 +38,8 @@ const (
 	TagCN      = "标签模块"
 	CategoryEN = "Category"
 	CategoryCN = "类别模块"
+	TopicEN    = "Topic"
+	TopicCN    = "话题模块"
 )
 
 // 前三位模块，后三位递增
@@ -61,13 +66,25 @@ var msgMap = map[int32]msgStruct{
 		ModuleCN: TagCN,
 		ModuleEN: TagEN,
 		MsgCN:    "新建标签 %s",
-		MsgEN:    "new category %s",
+		MsgEN:    "new tag %s",
 	},
 	DeleteTag: {
 		ModuleCN: TagCN,
 		ModuleEN: TagEN,
 		MsgCN:    "删除标签 %s",
 		MsgEN:    "delete tag %s",
+	},
+	NewTopic: {
+		ModuleCN: TopicCN,
+		ModuleEN: TopicEN,
+		MsgCN:    "新建话题 %s",
+		MsgEN:    "new topic %s",
+	},
+	DeleteTopic: {
+		ModuleCN: TopicCN,
+		ModuleEN: TopicEN,
+		MsgCN:    "删除话题 %s",
+		MsgEN:    "delete topic %s",
 	},
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/forgocode/family/internal/webservice/controller/comment"
 	"github.com/forgocode/family/internal/webservice/controller/system"
 	"github.com/forgocode/family/internal/webservice/controller/tag"
+	"github.com/forgocode/family/internal/webservice/controller/topic"
 	"github.com/forgocode/family/internal/webservice/controller/user"
 	"github.com/forgocode/family/internal/webservice/middleware"
 )
@@ -38,6 +39,8 @@ func Start() {
 		normalUserRouter.GET("/tags", tag.NormalGetAllTag)
 		//查看所有分类
 		normalUserRouter.GET("/category", category.NormalGetAllCategory)
+		//查看所有话题
+		normalUserRouter.GET("/topic", topic.NormalGetAllTopic)
 		//新建文章
 		normalUserRouter.POST("/article")
 		//删除文章
@@ -80,6 +83,13 @@ func Start() {
 		adminRouter.PUT("/category", category.AdminUpdateCategory)
 		//删除分类
 		adminRouter.DELETE("/category", category.AdminDeleteCategory)
+
+		adminRouter.GET("/topic", topic.AdminGetAllTopic)
+		adminRouter.POST("/topic", topic.AdminCreateTopic)
+		//更新话题是否启用
+		adminRouter.PUT("/topic", topic.AdminUpdateTopic)
+		//删除话题
+		adminRouter.DELETE("/topic", topic.AdminDeleteTopic)
 
 		//审核所有文章，封禁文章
 		adminRouter.PUT("/article")
