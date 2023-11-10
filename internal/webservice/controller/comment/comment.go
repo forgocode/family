@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/pkg/response"
 	commentService "github.com/forgocode/family/internal/webservice/service/comemnt"
+	topicService "github.com/forgocode/family/internal/webservice/service/topic"
 )
 
 func UserCreateComment(ctx *gin.Context) {
@@ -20,6 +21,11 @@ func UserCreateComment(ctx *gin.Context) {
 	}
 	com.AuthorID = "10000000"
 	err = commentService.UserCreateComment(com)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	err = topicService.AddUsedCountByTopicName(com.Topic)
 	if err != nil {
 		response.Failed(ctx, response.ErrDB)
 		return

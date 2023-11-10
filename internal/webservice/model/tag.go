@@ -6,6 +6,7 @@ type Tag struct {
 	Name       string `json:"name" gorm:"column:name"`
 	IsShow     bool   `json:"isShow" gorm:"column:isShow"`
 	UUID       string `json:"uuid" gorm:"column:uuid"`
+	UsedCount  int64  `json:"usedCount" gorm:"column:usedCount"`
 }
 
 func (t Tag) TableName() string {

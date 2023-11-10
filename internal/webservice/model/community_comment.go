@@ -14,6 +14,7 @@ type CommunityComment struct {
 	IsFirst      bool   `json:"isFirst" bson:"isFirst" gorm:"column:isFirst"`
 	TopCommentID string `json:"topCommentID" gorm:"column:topCommentID"`
 	ReplayTo     string `json:"replayTo" gorm:"column:replayTo"`
+	Topic        string `json:"topic" gorm:"column:topic"`
 }
 
 func (CommunityComment) TableName() string {

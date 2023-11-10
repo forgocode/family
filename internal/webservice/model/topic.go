@@ -5,6 +5,7 @@ type Topic struct {
 	Creator    string `json:"creator" gorm:"column:creator"`
 	Name       string `json:"name" gorm:"column:name"`
 	IsShow     bool   `json:"isShow" gorm:"column:isShow"`
+	UsedCount  int64  `json:"usedCount" gorm:"column:usedCount"`
 	UUID       string `json:"uuid" gorm:"column:uuid"`
 }
 

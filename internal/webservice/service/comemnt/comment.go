@@ -25,6 +25,7 @@ type UIComment struct {
 	IsFirst     bool        `json:"isFirst"`
 	Child       []UIComment `json:"child"`
 	ReplayTo    string      `json:"replayTo"`
+	Topic       string      `json:"topic"`
 }
 
 func (c *UIComment) Convert() *model.CommunityComment {
@@ -40,6 +41,7 @@ func (c *UIComment) Convert() *model.CommunityComment {
 		IsFirst:      false,
 		TopCommentID: c.TopCommentID,
 		ReplayTo:     c.ReplayTo,
+		Topic:        c.Topic,
 	}
 }
 

@@ -57,6 +57,20 @@ func getTopicCount() (int64, error) {
 	return count, result.Error
 }
 
+func AddUsedCountByTopicName(name string) error {
+	c := mysql.GetClient()
+	var topic model.Topic
+	result := c.C.Model(&model.Topic{}).Where("name = ?", name).Select("usedCount").Find(&topic)
+	if result.Error != nil {
+		return result.Error
+	}
+	result = c.C.Model(&model.Topic{}).Where("name = ?", name).Update("usedCount", topic.UsedCount+1)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
 func AdminCreateTopic(topic *UITopic) error {
 	return createTopic(topic.Convert())
 }
