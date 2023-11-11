@@ -48,6 +48,10 @@ func AdminCreateCategory(Category *UICategory) error {
 	return createCategory(Category.Convert())
 }
 
+func AdminGetCategoryCount() (int64, error) {
+	return getCategoryCount()
+}
+
 func AdminDeleteCategory(uuid string) error {
 
 	return deleteCategory(uuid)

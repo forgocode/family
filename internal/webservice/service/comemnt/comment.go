@@ -119,6 +119,13 @@ func UserGetComment() ([]UIComment, error) {
 	return comments, err
 }
 
+func AdminGetShortCommentCount() (int64, error) {
+	c := mysql.GetClient()
+	var count int64
+	result := c.C.Model(&model.CommunityComment{}).Where("parentID = ''").Count(&count)
+	return count, result.Error
+}
+
 func createComment(comment *model.CommunityComment) error {
 	c := mysql.GetClient()
 	result := c.C.Create(comment)

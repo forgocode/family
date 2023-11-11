@@ -43,6 +43,10 @@ func AdminGetAllTag(q *paginate.PageQuery) ([]model.Tag, int64, error) {
 	return tags, count, nil
 }
 
+func AdminGetTagCount() (int64, error) {
+	return getTagCount()
+}
+
 func adminGetAllTag(q *paginate.PageQuery) ([]model.Tag, error) {
 	c := mysql.GetClient()
 	var tags []model.Tag

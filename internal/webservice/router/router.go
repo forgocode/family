@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/webservice/controller/category"
 	"github.com/forgocode/family/internal/webservice/controller/comment"
+	"github.com/forgocode/family/internal/webservice/controller/statistic"
 	"github.com/forgocode/family/internal/webservice/controller/system"
 	"github.com/forgocode/family/internal/webservice/controller/tag"
 	"github.com/forgocode/family/internal/webservice/controller/topic"
@@ -98,6 +99,12 @@ func Start() {
 		adminRouter.GET("/systemLog")
 		//查看操作日志
 		adminRouter.GET("/operationLog", system.AdminGetOperationLog)
+
+		//获取标签、分类、、文章、短评总数
+		adminRouter.GET("/statistic/counts", statistic.StatisticCounts)
+		adminRouter.GET("/statistic/topic/top5")
+		adminRouter.GET("/statistic/tag/top5")
+		adminRouter.GET("/statistic/category/top5")
 	}
 	//超级管理员
 	{

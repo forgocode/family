@@ -42,6 +42,9 @@ func AdminGetAllTopic(q *paginate.PageQuery) ([]model.Topic, int64, error) {
 	}
 	return topics, count, nil
 }
+func AdminGetTopicCount() (int64, error) {
+	return getTopicCount()
+}
 
 func adminGetAllTopic(q *paginate.PageQuery) ([]model.Topic, error) {
 	c := mysql.GetClient()
