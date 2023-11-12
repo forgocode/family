@@ -16,7 +16,7 @@ func ConsumerMsg() {
 	config.Net.SASL.User = "user1"
 	config.Net.SASL.Password = "testkafka"
 
-	consumer, err := sarama.NewConsumer([]string{"192.168.0.202:30088"}, config)
+	consumer, err := sarama.NewConsumer([]string{"192.168.0.202:32088"}, config)
 	if err != nil {
 		panic(err)
 	}

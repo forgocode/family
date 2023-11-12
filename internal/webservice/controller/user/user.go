@@ -24,6 +24,10 @@ func AdminDeleteUser(ctx *gin.Context) {
 
 }
 
+func AdminCreateUser(ctx *gin.Context) {
+
+}
+
 func NormalGetAllUser(ctx *gin.Context) {
 
 	q, err := paginate.GetPageQuery(ctx)

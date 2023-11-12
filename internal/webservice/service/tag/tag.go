@@ -47,6 +47,13 @@ func AdminGetTagCount() (int64, error) {
 	return getTagCount()
 }
 
+func AdminGetTagTOP(limit int) ([]model.Tag, error) {
+	c := mysql.GetClient()
+	var tags []model.Tag
+	result := c.C.Model(&model.Tag{}).Select("name", "usedCount").Order("usedCount desc").Limit(limit).Find(&tags)
+	return tags, result.Error
+}
+
 func adminGetAllTag(q *paginate.PageQuery) ([]model.Tag, error) {
 	c := mysql.GetClient()
 	var tags []model.Tag

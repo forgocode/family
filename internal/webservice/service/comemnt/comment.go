@@ -45,6 +45,26 @@ func (c *UIComment) Convert() *model.CommunityComment {
 	}
 }
 
+func CommentAddTrend() (interface{}, error) {
+	type resultInfo struct {
+		Date  time.Time `json:"date"`
+		Count int       `json:"count"`
+	}
+	type trendInfo struct {
+		Date  string `json:"date"`
+		Count int    `json:"count"`
+	}
+	c := mysql.GetClient()
+	var info []resultInfo
+	var trend []trendInfo
+
+	result := c.C.Raw("select a.created_at as date,ifnull (b.count, 0) as count\nfrom(\n    SELECT curdate() as created_at\n    union all\n    SELECT date_sub(curdate(), interval 1 day) as created_at\n    union all\n    SELECT date_sub(curdate(), interval 2 day) as created_at\n    union all\n    SELECT date_sub(curdate(), interval 3 day) as created_at\n    union all\n    SELECT date_sub(curdate(), interval 4 day) as created_at\n    union all\n    SELECT date_sub(curdate(), interval 5 day) as created_at\n    union all\n    SELECT date_sub(curdate(), interval 6 day) as created_at\n) a left join (\nSELECT DATE_FORMAT( from_unixtime(createTime/1000),'%Y-%m-%d')  as date,count(*) as count FROM community_comment GROUP BY date\n) b on a.created_at = b.date order by a.created_at asc;").Scan(&info)
+	for _, i := range info {
+		trend = append(trend, trendInfo{Date: i.Date.Format("2006/01/02"), Count: i.Count})
+	}
+	return trend, result.Error
+}
+
 func UserCreateComment(comment *UIComment) error {
 	return createComment(comment.Convert())
 }

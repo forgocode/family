@@ -2,6 +2,7 @@ package database
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/webservice/database/mysql"
@@ -31,17 +32,18 @@ func Start() {
 
 func createSuperAdminUser() {
 	u := model.User{
-		UserID:   strconv.Itoa(userid.SuperAdministrator),
-		UserName: "超级管理员",
-		Password: "123456",
-		NickName: "超级管理员",
-		Theme:    "",
-		Avatar:   "",
-		Role:     "超级管理员",
-		RoleID:   "",
-		Phone:    "13888888888",
-		Email:    "forgocode@163.com",
-		Status:   0,
+		UserID:     strconv.Itoa(userid.SuperAdministrator),
+		UserName:   "超级管理员",
+		Password:   "123456",
+		NickName:   "超级管理员",
+		Theme:      "",
+		Avatar:     "",
+		Role:       3,
+		Phone:      "13888888888",
+		Email:      "forgocode@163.com",
+		Status:     0,
+		Sex:        1,
+		CreateTime: time.Now().UnixMilli(),
 	}
 	c, err := mysql.GetMysqlClient()
 	if err != nil {

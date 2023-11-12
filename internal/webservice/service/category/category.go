@@ -48,6 +48,13 @@ func AdminCreateCategory(Category *UICategory) error {
 	return createCategory(Category.Convert())
 }
 
+func AdminGetCategoryTOP(limit int) ([]model.Category, error) {
+	c := mysql.GetClient()
+	var cates []model.Category
+	result := c.C.Model(&model.Category{}).Select("name", "usedCount").Order("usedCount desc").Limit(limit).Find(&cates)
+	return cates, result.Error
+}
+
 func AdminGetCategoryCount() (int64, error) {
 	return getCategoryCount()
 }

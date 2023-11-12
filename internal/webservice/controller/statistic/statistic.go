@@ -7,6 +7,7 @@ import (
 	"github.com/forgocode/family/internal/pkg/response"
 	categoryService "github.com/forgocode/family/internal/webservice/service/category"
 	commentService "github.com/forgocode/family/internal/webservice/service/comemnt"
+	systemService "github.com/forgocode/family/internal/webservice/service/system"
 	tagService "github.com/forgocode/family/internal/webservice/service/tag"
 	topicService "github.com/forgocode/family/internal/webservice/service/topic"
 )
@@ -19,7 +20,7 @@ type StaticCountInfo struct {
 	ShortCommentTotal int64 `json:"shortCommentTotal"`
 }
 
-func StatisticCounts(ctx *gin.Context) {
+func Counts(ctx *gin.Context) {
 
 	tagCount, err := tagService.AdminGetTagCount()
 	if err != nil {
@@ -49,5 +50,48 @@ func StatisticCounts(ctx *gin.Context) {
 		ShortCommentTotal: shortCommentCount,
 	}
 	response.Success(ctx, *result, 1)
+}
 
+func UserAddTrend(ctx *gin.Context) {
+	result, err := systemService.UserAddTrend()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, result, 1)
+}
+
+func ArticleAddTrend(ctx *gin.Context) {
+	result, err := commentService.CommentAddTrend()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, result, 1)
+}
+
+func TopicTOP5(ctx *gin.Context) {
+	result, err := topicService.AdminGetTopicTOP(5)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, result, 1)
+
+}
+func TagTOP5(ctx *gin.Context) {
+	result, err := tagService.AdminGetTagTOP(5)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, result, 1)
+}
+func CategoryTOP5(ctx *gin.Context) {
+	result, err := categoryService.AdminGetCategoryTOP(5)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, result, 1)
 }

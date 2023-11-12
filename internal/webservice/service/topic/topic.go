@@ -1,5 +1,6 @@
 package topic
 
+import "C"
 import (
 	"time"
 
@@ -44,6 +45,13 @@ func AdminGetAllTopic(q *paginate.PageQuery) ([]model.Topic, int64, error) {
 }
 func AdminGetTopicCount() (int64, error) {
 	return getTopicCount()
+}
+
+func AdminGetTopicTOP(limit int) ([]model.Topic, error) {
+	c := mysql.GetClient()
+	var topics []model.Topic
+	result := c.C.Model(&model.Topic{}).Select("name", "usedCount").Order("usedCount desc").Limit(limit).Find(&topics)
+	return topics, result.Error
 }
 
 func adminGetAllTopic(q *paginate.PageQuery) ([]model.Topic, error) {

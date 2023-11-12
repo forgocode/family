@@ -101,10 +101,12 @@ func Start() {
 		adminRouter.GET("/operationLog", system.AdminGetOperationLog)
 
 		//获取标签、分类、、文章、短评总数
-		adminRouter.GET("/statistic/counts", statistic.StatisticCounts)
-		adminRouter.GET("/statistic/topic/top5")
-		adminRouter.GET("/statistic/tag/top5")
-		adminRouter.GET("/statistic/category/top5")
+		adminRouter.GET("/statistic/counts", statistic.Counts)
+		adminRouter.GET("/statistic/usertrend", statistic.UserAddTrend)
+		adminRouter.GET("/statistic/articletrend", statistic.ArticleAddTrend)
+		adminRouter.GET("/statistic/topictop5", statistic.TopicTOP5)
+		adminRouter.GET("/statistic/tagtop5", statistic.TagTOP5)
+		adminRouter.GET("/statistic/categorytop5", statistic.CategoryTOP5)
 	}
 	//超级管理员
 	{
