@@ -1,6 +1,5 @@
 package topic
 
-import "C"
 import (
 	"time"
 

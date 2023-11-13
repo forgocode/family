@@ -2,6 +2,7 @@ package web_im
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gorilla/websocket"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/forgocode/family/internal/webservice/database/redis"
 )
 
-const offLineDuration = 15
+const offLineDuration = 30
 
 func AddWebSocketClient(uid string, c *websocket.Conn) {
 	rs, err := redis.GetRedisClient()
@@ -47,7 +48,7 @@ func AddWebSocketClient(uid string, c *websocket.Conn) {
 			}
 		}()
 	}
-	if rs.Set(uid, client, 15*offLineDuration).Err() != nil {
+	if rs.Set(uid, client, offLineDuration*time.Minute).Err() != nil {
 		return
 	}
 
