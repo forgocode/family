@@ -28,7 +28,7 @@ func AddWebSocketClient(uid string, c *websocket.Conn) {
 		//启动goroutine来接收消息
 		go func() {
 			for {
-				_, message, err := c.ReadMessage()
+				mt, message, err := c.ReadMessage()
 				if err != nil {
 					newlog.Logger.Errorf("read:", err)
 					break
@@ -40,7 +40,14 @@ func AddWebSocketClient(uid string, c *websocket.Conn) {
 					continue
 				}
 				newlog.Logger.Debugf("server receive message info: %+v\n", msg)
-				//放入消息队列
+				nmsg := &typed.MessageInfo{Context: "欢迎你的到来"}
+				data, err := json.Marshal(nmsg)
+				if err != nil {
+					newlog.Logger.Errorf("failed to marshal message, err: %+v\n", err)
+					continue
+				}
+				err = c.WriteMessage(mt, data)
+				//立即投递，放入消息队列，缓存
 				if err != nil {
 					newlog.Logger.Errorf("write:", err)
 					break

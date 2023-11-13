@@ -10,6 +10,7 @@ import (
 	"github.com/forgocode/family/internal/webservice/controller/tag"
 	"github.com/forgocode/family/internal/webservice/controller/topic"
 	"github.com/forgocode/family/internal/webservice/controller/user"
+	"github.com/forgocode/family/internal/webservice/controller/web_im"
 	"github.com/forgocode/family/internal/webservice/middleware"
 )
 
@@ -54,6 +55,7 @@ func Start() {
 		normalUserRouter.GET("/comment", comment.UserGetComment)
 		// 赞评论
 		normalUserRouter.PUT("/comment")
+		normalUserRouter.GET("/ws", web_im.ReceiveClientComm)
 
 	}
 

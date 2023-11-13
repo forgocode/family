@@ -2,6 +2,7 @@ package client
 
 import (
 	"sync"
+	"time"
 
 	"github.com/forgocode/family/internal/pkg/typed"
 	"github.com/forgocode/family/internal/webservice/database/redis"
@@ -10,6 +11,8 @@ import (
 type clientManager struct {
 	clients sync.Map
 }
+
+const offLineDuration = 30
 
 var manager = &clientManager{
 	clients: sync.Map{},
@@ -32,12 +35,20 @@ func getClientFromRedis(uid string) (*typed.WebSocketClient, error) {
 	return c, nil
 }
 
-func addCientToRedis() {
-
+func addClientToRedis(uid string, c *typed.WebSocketClient) error {
+	rs, err := redis.GetRedisClient()
+	if err != nil {
+		return err
+	}
+	return rs.Set(uid, c, offLineDuration*time.Minute).Err()
 }
 
-func deleteClientFromRedis() {
-
+func deleteClientFromRedis(uid string) error {
+	rs, err := redis.GetRedisClient()
+	if err != nil {
+		return err
+	}
+	return rs.Del(uid).Err()
 }
 
 func (m *clientManager) addClient(uid string, c *typed.WebSocketClient) {
