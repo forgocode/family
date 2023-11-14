@@ -2,6 +2,7 @@ package web_im
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -30,9 +31,10 @@ func AddWebSocketClient(uid string, c *websocket.Conn) {
 			for {
 				mt, message, err := c.ReadMessage()
 				if err != nil {
-					newlog.Logger.Errorf("read:", err)
+					newlog.Logger.Errorf("read: %+v\n", err)
 					break
 				}
+				fmt.Printf("%+v\n", string(message))
 				msg := &typed.MessageInfo{}
 				err = json.Unmarshal(message, msg)
 				if err != nil {
@@ -47,9 +49,10 @@ func AddWebSocketClient(uid string, c *websocket.Conn) {
 					continue
 				}
 				err = c.WriteMessage(mt, data)
+				newlog.Logger.Debugf("server write message info: %+v\n", nmsg)
 				//立即投递，放入消息队列，缓存
 				if err != nil {
-					newlog.Logger.Errorf("write:", err)
+					newlog.Logger.Errorf("write: %+v\n", err)
 					break
 				}
 			}
