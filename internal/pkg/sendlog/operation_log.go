@@ -20,6 +20,8 @@ type msgStruct struct {
 
 const (
 	LoginCode = iota + 100000
+	AddUser
+	DeleteUser
 	NewCategory
 	DeleteCategory
 
@@ -45,6 +47,20 @@ const (
 // 前三位模块，后三位递增
 var msgMap = map[int32]msgStruct{
 	LoginCode: {
+		ModuleCN: SystemModuleCN,
+		ModuleEN: SystemModuleEN,
+		MsgCN:    "用户登录成功",
+		MsgEN:    "user login successfully!",
+	},
+
+	AddUser: {
+		ModuleCN: SystemModuleCN,
+		ModuleEN: SystemModuleEN,
+		MsgCN:    "新建用户 %s",
+		MsgEN:    "create new user %s",
+	},
+
+	DeleteUser: {
 		ModuleCN: SystemModuleCN,
 		ModuleEN: SystemModuleEN,
 		MsgCN:    "用户登录成功",

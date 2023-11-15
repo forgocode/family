@@ -29,12 +29,13 @@ func ReceiveClientComm(ctx *gin.Context) {
 	}
 
 	//uid := ctx.Request.Header.Get("uid")
+	//userName := ctx.Request.Header.Get("userName")
 	uid := "10000000"
+	userName := "root"
 	if uid == "" {
 		newlog.Logger.Errorf("failed ot get uuid from header\n")
 		return
 	}
-	web_im.AddWebSocketClient(uid, c)
+	web_im.AddWebSocketClient(uid, userName, c)
 
-	// response.Success(ctx, "", 1)
 }

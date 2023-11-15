@@ -7,7 +7,39 @@ import (
 	"github.com/forgocode/family/internal/webservice/database/mysql"
 	"github.com/forgocode/family/internal/webservice/model"
 	"github.com/forgocode/family/pkg/paginate"
+	"github.com/forgocode/family/pkg/userid"
 )
+
+type UIUser struct {
+	NickName      string `json:"nickName"`
+	Sex           int    `json:"sex"`
+	UID           string `json:"uid"`
+	Role          int    `json:"role"`
+	Password      string `json:"password"`
+	Phone         string `json:"phone"`
+	Email         string `json:"email"`
+	IsShow        string `json:"isShow"`
+	CreateTime    int64  `json:"createTime"`
+	LastLoginTime int64  `json:"lastLoginTime"`
+}
+
+func (u *UIUser) Convert() *model.User {
+	return &model.User{
+		UserID:        userid.GetUserID(),
+		NickName:      u.NickName,
+		Password:      u.Password,
+		Theme:         "",
+		Avatar:        "",
+		Role:          u.Role,
+		Phone:         u.Phone,
+		Email:         u.Email,
+		Status:        0,
+		CreateTime:    time.Now().UnixMilli(),
+		LastLoginTime: 0,
+		Score:         0,
+		Sex:           u.Sex,
+	}
+}
 
 func GetUserByPhone(phone string, passwd string) (string, error) {
 
@@ -17,6 +49,10 @@ func GetUserByPhone(phone string, passwd string) (string, error) {
 	}
 
 	return user.UserID, nil
+}
+
+func AdminCreateUser(user *UIUser) error {
+	return createUser(user.Convert())
 }
 
 func GetAllUser(q *paginate.PageQuery) ([]model.User, int64, error) {

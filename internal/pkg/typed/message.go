@@ -1,8 +1,6 @@
 package typed
 
 import (
-	"time"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -14,13 +12,14 @@ type MessageInfo struct {
 	Context     string      `json:"context"`
 	GroupID     string      `json:"groupID"`
 	ContextType int         `json:"contextType"`
-	Time        time.Time   `json:"time"`
+	Time        int64       `json:"time"`
 }
 
 type MessageType int
 
 const (
-	BroadCast MessageType = iota + 1
+	//系统广播消息不存mongo
+	SystemBroadCast MessageType = iota + 1
 )
 
 type WebSocketClient struct {

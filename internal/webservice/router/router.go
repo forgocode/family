@@ -66,6 +66,8 @@ func Start() {
 		// adminRouter.Use(middleware.AuthAdmin())
 		//(解)封禁用户
 		adminRouter.PUT("/user/ban")
+		// 新增用户
+		adminRouter.POST("/user", user.AdminCreateUser)
 		//获取所有用户
 		adminRouter.GET("/user", user.NormalGetAllUser)
 

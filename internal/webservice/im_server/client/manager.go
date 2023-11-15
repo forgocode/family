@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/typed"
 	"github.com/forgocode/family/internal/webservice/database/redis"
 )
@@ -19,7 +20,27 @@ var manager = &clientManager{
 }
 
 func AddClient(uid string, c *typed.WebSocketClient) {
+	manager.addClient(uid, c)
+	err := addClientToRedis(uid, c)
+	if err != nil {
+		newlog.Logger.Errorf("failed to store client to redis, err: %+v\n", err)
+	}
+}
 
+func DeleteClient(uid string) {
+	manager.delClient(uid)
+	err := deleteClientFromRedis(uid)
+	if err != nil {
+		newlog.Logger.Errorf("failed to delete client from redis, err: %+v\n", err)
+	}
+}
+
+func FindClientByUid(uid string) (*typed.WebSocketClient, error) {
+	return manager.getClient(uid)
+}
+
+func ListClient() []*typed.WebSocketClient {
+	return manager.listClient()
 }
 
 func getClientFromRedis(uid string) (*typed.WebSocketClient, error) {
@@ -59,7 +80,13 @@ func (m *clientManager) delClient(uid string) {
 	m.clients.Delete(uid)
 }
 
-func (m *clientManager) listClient() {
+func (m *clientManager) listClient() []*typed.WebSocketClient {
+	var clients []*typed.WebSocketClient
+	m.clients.Range(func(key, value any) bool {
+		clients = append(clients, value.(*typed.WebSocketClient))
+		return true
+	})
+	return clients
 
 }
 
