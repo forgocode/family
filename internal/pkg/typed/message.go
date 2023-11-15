@@ -7,14 +7,14 @@ import (
 )
 
 type MessageInfo struct {
-	FromUID     string
-	FromName    string
-	ToUID       string
-	Type        MessageType
-	Context     string
-	GroupID     string
-	ContextType int
-	Time        time.Time
+	FromUID     string      `json:"fromUID"`
+	FromName    string      `json:"fromName"`
+	ToUID       string      `json:"toUID"`
+	Type        MessageType `json:"type"`
+	Context     string      `json:"context"`
+	GroupID     string      `json:"groupID"`
+	ContextType int         `json:"contextType"`
+	Time        time.Time   `json:"time"`
 }
 
 type MessageType int

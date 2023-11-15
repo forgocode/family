@@ -17,17 +17,23 @@ const offLineDuration = 30
 func AddWebSocketClient(uid string, c *websocket.Conn) {
 	rs, err := redis.GetRedisClient()
 	if err != nil {
-		return
+		newlog.Logger.Errorf("failed to get redis client, err: %+v\n", err)
+		// return
 	}
 	client := typed.WebSocketClient{
 		Client:   c,
 		UserName: "",
 	}
+	fmt.Printf("1111111\n")
 	//没找到client，不存在发送广播消息
 	if rs.Get(uid).Err() != nil {
 		//发送广播消息
 		//启动goroutine来接收消息
 		go func() {
+			fmt.Println(33333333)
+			defer func() {
+				fmt.Println(1222222)
+			}()
 			for {
 				mt, message, err := c.ReadMessage()
 				if err != nil {
@@ -49,7 +55,7 @@ func AddWebSocketClient(uid string, c *websocket.Conn) {
 					continue
 				}
 				err = c.WriteMessage(mt, data)
-				newlog.Logger.Debugf("server write message info: %+v\n", nmsg)
+				newlog.Logger.Infof("server write message info: %+v\n", nmsg)
 				//立即投递，放入消息队列，缓存
 				if err != nil {
 					newlog.Logger.Errorf("write: %+v\n", err)

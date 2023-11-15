@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/forgocode/family/internal/pkg/newlog"
-	"github.com/forgocode/family/internal/pkg/response"
+	// "github.com/forgocode/family/internal/pkg/response"
 	"github.com/forgocode/family/internal/webservice/service/web_im"
 )
 
@@ -36,5 +36,5 @@ func ReceiveClientComm(ctx *gin.Context) {
 	}
 	web_im.AddWebSocketClient(uid, c)
 
-	response.Success(ctx, "", 1)
+	// response.Success(ctx, "", 1)
 }
