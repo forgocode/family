@@ -57,6 +57,10 @@ func Start() {
 		normalUserRouter.PUT("/comment")
 		normalUserRouter.GET("/ws", web_im.ReceiveClientComm)
 
+		//发送好友请求
+
+		//删除好友
+
 	}
 
 	//管理员

@@ -68,9 +68,10 @@ func Login(ctx *gin.Context) {
 	ctx.JSON(
 		http.StatusOK,
 		gin.H{
-			"code":  200,
-			"msg":   "handle successfully",
-			"token": token,
-			"role":  user.Role,
+			"code":   200,
+			"msg":    "handle successfully",
+			"token":  token,
+			"userID": userID,
+			"role":   user.Role,
 		})
 }

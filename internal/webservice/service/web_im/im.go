@@ -11,6 +11,7 @@ import (
 	"github.com/forgocode/family/internal/pkg/typed"
 	"github.com/forgocode/family/internal/webservice/database/redis"
 	client_manager "github.com/forgocode/family/internal/webservice/im_server/client"
+	message_receiver "github.com/forgocode/family/internal/webservice/im_server/message"
 )
 
 const offLineDuration = 30
@@ -38,19 +39,7 @@ func AddWebSocketClient(uid, userName string, c *websocket.Conn) {
 			ContextType: 0,
 			Time:        time.Now().UnixMilli(),
 		}
-		data, err := json.Marshal(msg)
-		if err != nil {
-			newlog.Logger.Errorf("failed to marshal message, err: %+v\n", err)
-			return
-		}
-		clients := client_manager.ListClient()
-		for _, c := range clients {
-			err = c.Client.WriteMessage(0, data)
-			newlog.Logger.Debugf("server write message info: %+v\n", err)
-			if err != nil {
-				newlog.Logger.Errorf("write: %+v\n", err)
-			}
-		}
+		message_receiver.SetMessage2Chan(msg)
 
 		go func() {
 			for {
@@ -59,24 +48,36 @@ func AddWebSocketClient(uid, userName string, c *websocket.Conn) {
 					newlog.Logger.Errorf("read: %+v\n", err)
 					break
 				}
-				fmt.Printf("%+v\n", string(message))
+
 				msg := &typed.MessageInfo{}
 				err = json.Unmarshal(message, msg)
 				if err != nil {
 					newlog.Logger.Errorf("failed to Unmarshal message, err: %+v\n", err)
 					continue
 				}
-				newlog.Logger.Debugf("server receive message info: %+v\n", msg)
-				toC, err := client_manager.FindClientByUid(msg.ToUID)
 
-				//todo 放到队列中
-				err = toC.Client.WriteMessage(mt, data)
-				newlog.Logger.Debugf("server write message info: %+v\n", msg)
-				//立即投递，放入消息队列，缓存
+				err = message_receiver.SetMessage2Chan(msg)
 				if err != nil {
-					newlog.Logger.Errorf("write: %+v\n", err)
-					break
+					busymsg := &typed.MessageInfo{
+						FromUID:     "",
+						FromName:    "",
+						ToUID:       "",
+						Type:        typed.SystemIsBusy,
+						Context:     "系统忙，请稍后再试",
+						GroupID:     "",
+						ContextType: 0,
+						Time:        time.Now().UnixMilli(),
+					}
+					data, err := json.Marshal(busymsg)
+					if err != nil {
+						continue
+					}
+					err = c.WriteMessage(mt, data)
+					if err != nil {
+						newlog.Logger.Errorf("failed to send system busy message to uid: %+v\n", err)
+					}
 				}
+
 			}
 		}()
 	}

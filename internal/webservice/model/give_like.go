@@ -1,5 +1,6 @@
 package model
 
+// 谁给谁点了赞/踩, 文章还是短评
 type GiveLike struct {
 	ID       string `json:"ID" gorm:"column:ID"`
 	UserID   string `json:"UserID" gorm:"column:userID"`
@@ -9,5 +10,5 @@ type GiveLike struct {
 }
 
 func (GiveLike) TableName() string {
-	return "give_name"
+	return "give_like"
 }

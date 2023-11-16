@@ -19,7 +19,9 @@ type MessageType int
 
 const (
 	//系统广播消息不存mongo
-	SystemBroadCast MessageType = iota + 1
+	SystemBroadCast = iota + 1
+	// 系统忙 不存mongo
+	SystemIsBusy
 )
 
 type WebSocketClient struct {
