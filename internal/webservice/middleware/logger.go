@@ -11,7 +11,7 @@ import (
 func Logger() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
-		host := ctx.RemoteIP()
+		host := ctx.ClientIP()
 		path := ctx.Request.URL.Path
 		method := ctx.Request.Method
 		ctx.Next()

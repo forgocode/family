@@ -8,7 +8,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	proto "github.com/forgocode/family/internal/grpcserver/proto/log"
+	logproto "github.com/forgocode/family/internal/grpcserver/proto/log"
+	messageproto "github.com/forgocode/family/internal/grpcserver/proto/message"
+	stationnoticeproto "github.com/forgocode/family/internal/grpcserver/proto/station_notice"
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/webservice/database/mongo"
 	"github.com/forgocode/family/internal/webservice/model"
@@ -16,23 +18,30 @@ import (
 )
 
 type Server struct {
-	proto.UnimplementedOperationLogServer
+	logproto.UnimplementedOperationLogServer
+}
+type stationNoticeServer struct {
+	stationnoticeproto.UnimplementedHandleStationNoticeServer
+}
+
+type messageServer struct {
+	messageproto.UnimplementedHandleMessageServer
 }
 
 var operationLog = make(chan *model.OperationLogInfo, 512)
 
-func (s *Server) AddOperationLog(ctx context.Context, msg *proto.OperationLogInfo) (*proto.Response, error) {
+func (s *Server) AddOperationLog(ctx context.Context, msg *logproto.OperationLogInfo) (*logproto.Response, error) {
 	newlog.Logger.Debugf("receive log info: %+v\n", msg)
 	log := &model.OperationLogInfo{}
 	log.UUID = uuid.GetUUID()
 	log.Convert(msg)
 	select {
 	case operationLog <- log:
-		return &proto.Response{
+		return &logproto.Response{
 			Status: 200,
 		}, nil
 	default:
-		return &proto.Response{Status: 200}, errors.New("grpc server can't receive operation log\n")
+		return &logproto.Response{Status: 200}, errors.New("grpc server can't receive operation log\n")
 	}
 }
 
@@ -44,12 +53,18 @@ func Start() {
 		return
 	}
 	s := grpc.NewServer()
-	proto.RegisterOperationLogServer(s, &Server{})
+	registerGrpc(s)
 	err = s.Serve(listener)
 	if err != nil {
 		newlog.Logger.Errorf("failed to server grpc server, err: %+v\n", err)
 		return
 	}
+}
+
+func registerGrpc(s *grpc.Server) {
+	logproto.RegisterOperationLogServer(s, &Server{})
+	messageproto.RegisterHandleMessageServer(s, *&messageServer{})
+	stationnoticeproto.RegisterHandleStationNoticeServer(s, &stationNoticeServer{})
 }
 
 func handleOperation() {
