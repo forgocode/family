@@ -1,6 +1,7 @@
 package web_im
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -21,6 +22,7 @@ func ReceiveClientComm(ctx *gin.Context) {
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
+		Subprotocols: []string{ctx.Request.Header.Get("Sec-Websocket-Protocol")},
 	}
 	c, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
@@ -28,14 +30,13 @@ func ReceiveClientComm(ctx *gin.Context) {
 		return
 	}
 
-	//uid := ctx.Request.Header.Get("uid")
-	//userName := ctx.Request.Header.Get("userName")
-	uid := "10000000"
-	userName := "root"
-	if uid == "" {
+	userID := ctx.Request.Header.Get("userID")
+	userName := ctx.Request.Header.Get("userName")
+	fmt.Printf("uid: %s, userName: %s\n", userID, userName)
+	if userID == "" {
 		newlog.Logger.Errorf("failed ot get uuid from header\n")
 		return
 	}
-	web_im.AddWebSocketClient(uid, userName, c)
+	web_im.AddWebSocketClient(userID, userName, c)
 
 }

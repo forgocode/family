@@ -5,6 +5,7 @@ import (
 
 	"github.com/forgocode/family/internal/webservice/controller/category"
 	"github.com/forgocode/family/internal/webservice/controller/comment"
+	"github.com/forgocode/family/internal/webservice/controller/like"
 	"github.com/forgocode/family/internal/webservice/controller/statistic"
 	"github.com/forgocode/family/internal/webservice/controller/system"
 	"github.com/forgocode/family/internal/webservice/controller/tag"
@@ -19,20 +20,20 @@ func Start() {
 	engine.Use(middleware.Logger(), middleware.Recovery())
 	//engine.Use(gin.Logger())
 
-	engine.POST("/register", system.Register)
-	engine.POST("/login", system.Login)
 	//游客
 	{
-		commentRouter := engine.Group("/comment")
-		commentRouter.Use()
-		commentRouter.GET("/comment")
-		commentRouter.GET("/article")
+		engine.POST("/register", system.Register)
+		engine.POST("/login", system.Login)
+		//查看短评
+		engine.GET("/comment", comment.UserGetComment)
+		engine.GET("/article")
+		// 获取评论
 	}
 	//普通用户
 	{
 		normalUserRouter := engine.Group("/normalUser")
 
-		// normalUserRouter.Use(middleware.AuthNormal())
+		normalUserRouter.Use(middleware.AuthNormal())
 
 		//获取用户的所有个人信息
 		normalUserRouter.GET("info")
@@ -51,11 +52,14 @@ func Start() {
 		normalUserRouter.PUT("/article")
 		//新建评论
 		normalUserRouter.POST("/comment", comment.UserCreateComment)
-		// 获取评论
-		normalUserRouter.GET("/comment", comment.UserGetComment)
 		// 赞评论
 		normalUserRouter.PUT("/comment")
 		normalUserRouter.GET("/ws", web_im.ReceiveClientComm)
+
+		//赞
+		normalUserRouter.POST("/like", like.GiveLike)
+		//踩
+		normalUserRouter.POST("/unlike", like.GiveLike)
 
 		//发送好友请求
 
@@ -115,6 +119,10 @@ func Start() {
 		adminRouter.GET("/statistic/topictop5", statistic.TopicTOP5)
 		adminRouter.GET("/statistic/tagtop5", statistic.TagTOP5)
 		adminRouter.GET("/statistic/categorytop5", statistic.CategoryTOP5)
+		adminRouter.GET("/statistic/")
+
+		adminRouter.GET("/version", system.GetVersion)
+		adminRouter.GET("/monitor", system.GetMonitor)
 	}
 	//超级管理员
 	{

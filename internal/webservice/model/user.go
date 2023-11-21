@@ -24,6 +24,12 @@ const (
 	UserIsBaned  = 2
 )
 
+const (
+	NormalUser = 1
+	Admin      = 2
+	SuperAdmin = 3
+)
+
 func (User) TableName() string {
 	return "user"
 }

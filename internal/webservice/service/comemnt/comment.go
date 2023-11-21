@@ -18,14 +18,16 @@ type UIComment struct {
 	TopCommentID string `json:"topCommentID"`
 	CreateTime   int64  `json:"createTime" `
 	// 点赞数
-	LikeCount   int32       `json:"likeCount" `
-	UnLikeCount int32       `json:"unLikeCount" `
-	ParentID    string      `json:"parentID" `
-	IsShow      bool        `json:"isShow" `
-	IsFirst     bool        `json:"isFirst"`
-	Child       []UIComment `json:"child"`
-	ReplayTo    string      `json:"replayTo"`
-	Topic       string      `json:"topic"`
+	LikeCount    int32       `json:"likeCount" `
+	UnLikeCount  int32       `json:"unLikeCount" `
+	ParentID     string      `json:"parentID" `
+	IsShow       bool        `json:"isShow" `
+	IsFirst      bool        `json:"isFirst"`
+	Child        []UIComment `json:"child"`
+	ReplayTo     string      `json:"replayTo"`
+	Topic        string      `json:"topic"`
+	Address      string      `json:"address"`
+	ReplayToUser string      `json:"replayToUser"`
 }
 
 func (c *UIComment) Convert() *model.CommunityComment {
@@ -42,6 +44,9 @@ func (c *UIComment) Convert() *model.CommunityComment {
 		TopCommentID: c.TopCommentID,
 		ReplayTo:     c.ReplayTo,
 		Topic:        c.Topic,
+		Address:      c.Address,
+		UserName:     c.User,
+		ReplayToUser: c.ReplayToUser,
 	}
 }
 
@@ -77,7 +82,7 @@ func UserGetComment() ([]UIComment, error) {
 	}
 	for _, fc := range first {
 		f := UIComment{
-			User:         fc.AuthorID,
+			User:         fc.UserName,
 			Context:      fc.Context,
 			AuthorID:     fc.AuthorID,
 			CommentID:    fc.CommentID,
@@ -88,6 +93,8 @@ func UserGetComment() ([]UIComment, error) {
 			IsShow:       fc.IsShow,
 			IsFirst:      fc.IsFirst,
 			TopCommentID: fc.TopCommentID,
+			Address:      fc.Address,
+			Topic:        fc.Topic,
 			Child:        nil,
 		}
 		second, err := findSecondLevelComment(fc.CommentID, fc.CommentID)
@@ -96,7 +103,7 @@ func UserGetComment() ([]UIComment, error) {
 		}
 		for _, sc := range second {
 			s := UIComment{
-				User:        sc.AuthorID,
+				User:        sc.UserName,
 				Context:     sc.Context,
 				AuthorID:    sc.AuthorID,
 				CommentID:   sc.CommentID,
@@ -106,6 +113,7 @@ func UserGetComment() ([]UIComment, error) {
 				ParentID:    sc.ParentID,
 				IsShow:      sc.IsShow,
 				IsFirst:     sc.IsFirst,
+				Address:     sc.Address,
 				Child:       nil,
 			}
 			if sc.ParentID == "" {
@@ -117,18 +125,20 @@ func UserGetComment() ([]UIComment, error) {
 			}
 			for _, v := range third {
 				t := UIComment{
-					User:        v.AuthorID,
-					Context:     v.Context,
-					AuthorID:    v.AuthorID,
-					CommentID:   v.CommentID,
-					CreateTime:  v.CreateTime,
-					LikeCount:   v.LikeCount,
-					UnLikeCount: v.UnLikeCount,
-					ParentID:    v.ParentID,
-					IsShow:      v.IsShow,
-					IsFirst:     v.IsFirst,
-					Child:       nil,
-					ReplayTo:    v.ReplayTo,
+					User:         v.UserName,
+					Context:      v.Context,
+					AuthorID:     v.AuthorID,
+					CommentID:    v.CommentID,
+					CreateTime:   v.CreateTime,
+					LikeCount:    v.LikeCount,
+					UnLikeCount:  v.UnLikeCount,
+					ParentID:     v.ParentID,
+					IsShow:       v.IsShow,
+					IsFirst:      v.IsFirst,
+					Child:        nil,
+					ReplayTo:     v.ReplayTo,
+					Address:      v.Address,
+					ReplayToUser: v.ReplayToUser,
 				}
 				s.Child = append(s.Child, t)
 			}
@@ -137,6 +147,28 @@ func UserGetComment() ([]UIComment, error) {
 		comments = append(comments, f)
 	}
 	return comments, err
+}
+
+func UpdateCommentLike(uid string, isLike bool, count int32) error {
+	c := mysql.GetClient()
+	if isLike {
+		return c.C.Model(&model.CommunityComment{}).Where("commentID = ?", uid).Update("likeCount", count).Error
+	}
+	return c.C.Model(&model.CommunityComment{}).Where("commentID = ?", uid).Update("unLikeCount", count).Error
+}
+
+func GetCommentLikeCount(uid string, isLike bool) (int32, error) {
+	c := mysql.GetClient()
+	var comment model.CommunityComment
+	result := c.C.Model(&model.CommunityComment{}).Where("commentID = ?", uid).Find(&comment)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	if isLike {
+		return comment.LikeCount, nil
+	}
+	return comment.UnLikeCount, nil
+
 }
 
 func AdminGetShortCommentCount() (int64, error) {

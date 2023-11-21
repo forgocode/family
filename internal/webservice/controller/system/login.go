@@ -10,6 +10,7 @@ import (
 	"github.com/forgocode/family/internal/pkg/sendlog"
 	"github.com/forgocode/family/internal/webservice/middleware"
 	"github.com/forgocode/family/internal/webservice/model"
+	"github.com/forgocode/family/internal/webservice/service/socre"
 	"github.com/forgocode/family/internal/webservice/service/system"
 )
 
@@ -29,29 +30,24 @@ func Login(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct, "please input phone")
 		return
 	}
-	user := model.User{
-		Phone:    info.Phone,
-		Password: info.Passwd,
-	}
-	newlog.Logger.Infof("%+v\n", user)
-	userID, err := system.GetUserByPhone(user.Phone, user.Password)
+	user, err := system.GetUserByPhone(info.Phone, info.Passwd)
 	if err != nil {
 		//登陆失败
 		response.Failed(ctx, response.ErrUserNameOrPassword)
 		return
 	}
 
-	if userID == "" {
+	if user.UserID == "" {
 		response.Failed(ctx, response.ErrUserNameOrPassword, "user not exist")
 		return
 	}
-	if system.UpdateUserLastLogin(userID) != nil {
+	if system.UpdateUserLastLogin(user.UserID) != nil {
 		response.Failed(ctx, response.ErrDB, "")
 		return
 	}
 
-	newlog.Logger.Infof("user <%s> login successfully\n", userID)
-	token, err := middleware.GenerateToken(user.UserID, "", "")
+	newlog.Logger.Infof("user <%s> login successfully\n", user.NickName)
+	token, err := middleware.GenerateToken(user.UserID, user.NickName, user.Role)
 	if err != nil {
 		response.Failed(ctx, response.ErrUserNameOrPassword)
 		return
@@ -61,17 +57,23 @@ func Login(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrRedis)
 		return
 	}
-	err = sendlog.SendOperationLog(userID, "cn", sendlog.LoginCode)
+	err = sendlog.SendOperationLog(user.UserID, "cn", sendlog.LoginCode)
 	if err != nil {
 		newlog.Logger.Errorf("failed to send operation log, err: %+v\n", err)
+	}
+	err = socre.AddScore(user.UserID, model.Login)
+	if err != nil {
+		newlog.Logger.Errorf("failed to add score, err: %+v\n", err)
+		//return
 	}
 	ctx.JSON(
 		http.StatusOK,
 		gin.H{
-			"code":   200,
-			"msg":    "handle successfully",
-			"token":  token,
-			"userID": userID,
-			"role":   user.Role,
+			"code":     200,
+			"msg":      "handle successfully",
+			"token":    token,
+			"userID":   user.UserID,
+			"role":     user.Role,
+			"userName": user.UserName,
 		})
 }

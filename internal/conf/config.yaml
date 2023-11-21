@@ -1,3 +1,9 @@
+base:
+  systemName: "社区系统"
+  version: "0.0.1_base"
+  commitID: "0bce98ce589a74dedd84c9c3d3099f1ce566afe2"
+  buildTime: "2023-11-18 12:21:34"
+
 mysql:
   ip: "mysql.test.com"
   port: 3306

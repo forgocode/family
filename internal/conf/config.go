@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	Base  BaseConfig  `json:"base" yaml:"base"`
 	Mysql MysqlConfig `json:"mysql" yaml:"mysql"`
 	Redis RedisConfig `json:"redis" yaml:"redis"`
 	Mongo MongoConfig `json:"mongo" yaml:"mongo"`
@@ -30,6 +31,14 @@ type RedisConfig struct {
 }
 
 type KafkaConfig struct {
+}
+
+type BaseConfig struct {
+	SystemName string `json:"systemName" yaml:"systemName"`
+	Version    string `json:"version" yaml:"version"`
+	CommitID   string `json:"commitID" yaml:"commitID"`
+	BuildTime  string `json:"buildTime" yaml:"buildTime"`
+	GoVersion  string `json:"goVersion" yaml:"goVersion"`
 }
 
 type MongoConfig struct {

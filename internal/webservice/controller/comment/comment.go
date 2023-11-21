@@ -19,7 +19,9 @@ func UserCreateComment(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	com.AuthorID = "10000000"
+	com.AuthorID = ctx.Request.Header.Get("userID")
+	com.Address = ctx.Request.Header.Get("clientIP")
+	com.User = ctx.Request.Header.Get("userName")
 	err = commentService.UserCreateComment(com)
 	if err != nil {
 		response.Failed(ctx, response.ErrDB)

@@ -1,6 +1,7 @@
 package model
 
 type CommunityComment struct {
+	UserName  string `json:"userName" gorm:"column:userName"`
 	AuthorID  string `json:"authorID" bson:"authorID" gorm:"column:authorID"`
 	CommentID string `json:"commentID" bson:"commentID" gorm:"column:commentID"`
 	// 评论内容
@@ -15,6 +16,8 @@ type CommunityComment struct {
 	TopCommentID string `json:"topCommentID" gorm:"column:topCommentID"`
 	ReplayTo     string `json:"replayTo" gorm:"column:replayTo"`
 	Topic        string `json:"topic" gorm:"column:topic"`
+	Address      string `json:"address" gorm:"column:address"`
+	ReplayToUser string `json:"replayToUser" gorm:"column:replayToUser"`
 }
 
 func (CommunityComment) TableName() string {

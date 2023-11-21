@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -10,6 +12,7 @@ import (
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
 	"github.com/forgocode/family/internal/webservice/database/redis"
+	"github.com/forgocode/family/internal/webservice/model"
 )
 
 var JwtStr = []byte("这是jwt认证密钥")
@@ -21,14 +24,20 @@ const (
 type Claims struct {
 	UserID   string
 	UserName string
-	Role     string
+	Role     int
 	jwt.StandardClaims
 }
 
 // 普通用户
 func AuthNormal() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token := ctx.Request.Header.Get("token")
+		token := ""
+		if ctx.Request.URL.String() == "/normalUser/ws" {
+			token = ctx.Request.Header.Get("Sec-Websocket-Protocol")
+		} else {
+			token = ctx.Request.Header.Get("token")
+		}
+		fmt.Println(token)
 		if token == "" {
 			ctx.Abort()
 			response.Failed(ctx, response.ErrAuth)
@@ -41,7 +50,7 @@ func AuthNormal() gin.HandlerFunc {
 		}
 		if restoreToken(token) != nil {
 			ctx.Abort()
-			response.Failed(ctx, response.ErrRedis)
+			response.Failed(ctx, response.ErrAuth)
 			return
 		}
 		claims, err := parseToken(token)
@@ -49,11 +58,12 @@ func AuthNormal() gin.HandlerFunc {
 			newlog.Logger.Errorf("failed to parse token, err:%+v\n", err)
 		}
 		ctx.Request.Header.Set("userName", claims.UserName)
-		ctx.Request.Header.Set("role", claims.Role)
+		ctx.Request.Header.Set("role", strconv.Itoa(claims.Role))
 		ctx.Request.Header.Set("userID", claims.UserID)
-		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
+		ctx.Request.Header.Set("clientIP", ctx.ClientIP())
+		fmt.Println(11111, claims.UserName)
+		newlog.Logger.Infof("user:%s, auth successfully\n", claims.UserName)
 		ctx.Next()
-
 	}
 }
 
@@ -75,7 +85,7 @@ func AuthAdmin() gin.HandlerFunc {
 		if err != nil {
 			newlog.Logger.Errorf("failed to parse token, err:%+v\n", err)
 		}
-		if claims.Role != "admin" {
+		if claims.Role != model.Admin {
 			ctx.Abort()
 			return
 		}
@@ -86,7 +96,7 @@ func AuthAdmin() gin.HandlerFunc {
 		}
 
 		ctx.Request.Header.Set("userName", claims.UserName)
-		ctx.Request.Header.Set("role", claims.Role)
+		ctx.Request.Header.Set("role", strconv.Itoa(claims.Role))
 		ctx.Request.Header.Set("userID", claims.UserID)
 		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
 		ctx.Next()
@@ -111,7 +121,7 @@ func AuthSuperAdmin() gin.HandlerFunc {
 		if err != nil {
 			newlog.Logger.Errorf("failed to parse token, err:%+v\n", err)
 		}
-		if claims.Role != "super_admin" {
+		if claims.Role != model.SuperAdmin {
 			ctx.Abort()
 			return
 		}
@@ -122,14 +132,14 @@ func AuthSuperAdmin() gin.HandlerFunc {
 		}
 
 		ctx.Request.Header.Set("userName", claims.UserName)
-		ctx.Request.Header.Set("role", claims.Role)
+		ctx.Request.Header.Set("role", strconv.Itoa(claims.Role))
 		ctx.Request.Header.Set("userID", claims.UserID)
 		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
 		ctx.Next()
 	}
 }
 
-func GenerateToken(userID, role, userName string) (string, error) {
+func GenerateToken(userID, userName string, role int) (string, error) {
 	claim := &Claims{
 		UserName: userName,
 		UserID:   userID,

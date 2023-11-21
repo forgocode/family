@@ -21,6 +21,8 @@ func Start() {
 		&model.Tag{},
 		&model.CommunityComment{},
 		&model.Topic{},
+		&model.GiveLike{},
+		&model.Score{},
 	)
 	if err != nil {
 		newlog.Logger.Errorf("failed to auto migrate mysql table, err:%+v\n", err)

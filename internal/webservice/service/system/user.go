@@ -1,5 +1,6 @@
 package system
 
+import "C"
 import (
 	"errors"
 	"time"
@@ -41,14 +42,30 @@ func (u *UIUser) Convert() *model.User {
 	}
 }
 
-func GetUserByPhone(phone string, passwd string) (string, error) {
+func UpdateUserCore(uid string, score int64) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.User{}).Where("userID = ?", uid).Update("score", score).Error
+
+}
+
+func GetUserCore(uid string) (int64, error) {
+	c := mysql.GetClient()
+	var u model.User
+	result := c.C.Model(&model.User{}).Where("userID = ?", uid).Find(&u)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return u.Score, nil
+}
+
+func GetUserByPhone(phone string, passwd string) (*model.User, error) {
 
 	user, err := getUserByPhone(phone, passwd)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return user.UserID, nil
+	return user, nil
 }
 
 func AdminCreateUser(user *UIUser) error {
@@ -95,6 +112,10 @@ func UserAddTrend() (interface{}, error) {
 
 func createUser(user *model.User) error {
 	c := mysql.GetClient()
+
+	if ok, err := isPhoneExist(user.Phone); err != nil || ok {
+		return errors.New("phone is exist")
+	}
 	result := c.C.Create(user)
 	if result.Error != nil {
 		return errors.New(result.Error.Error())
@@ -106,6 +127,19 @@ func isUserIDExist(userID string) (bool, error) {
 	c := mysql.GetClient()
 	var user model.User
 	result := c.C.Where("userID = ?", userID).Find(&user)
+	if result.Error != nil {
+		return true, result.Error
+	}
+	if result.RowsAffected != 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func isPhoneExist(phone string) (bool, error) {
+	c := mysql.GetClient()
+	var user model.User
+	result := c.C.Where("phone = ?", phone).Find(&user)
 	if result.Error != nil {
 		return true, result.Error
 	}

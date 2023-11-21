@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/typed"
@@ -13,6 +14,7 @@ var msgChan = make(chan *typed.MessageInfo, 1024)
 func SetMessage2Chan(msg *typed.MessageInfo) error {
 	select {
 	case msgChan <- msg:
+		fmt.Printf("%+v\n", msg)
 		return nil
 	default:
 		return errors.New("channal is full, please try later")
@@ -30,7 +32,7 @@ func ReceiveMessage() {
 		case typed.SystemBroadCast:
 			broadCastMessage(data)
 		default:
-			sendMsgToUser(msg.ToUID, data)
+			err := sendMsgToUser(msg.ToUID, data)
 			if err != nil {
 				newlog.Logger.Errorf("failed to send msg to")
 			}
