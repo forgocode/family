@@ -110,6 +110,24 @@ func UserAddTrend() (interface{}, error) {
 	return trend, result.Error
 }
 
+func UserScoreTop() ([]model.User, error) {
+	c := mysql.GetClient()
+	var users []model.User
+	result := c.C.Model(&model.User{}).Select("userID", "nickName", "score").Order("score desc").Limit(10).Find(&users)
+	return users, result.Error
+}
+
+func UserActive30() {
+	type resultInfo struct {
+		Role  int `json:"role"`
+		Count int `json:"count"`
+	}
+	// var info []resultInfo
+	// c := mysql.GetClient()
+	// c.C.Raw("select role, count(*) as count from user group by ac")
+
+}
+
 func createUser(user *model.User) error {
 	c := mysql.GetClient()
 

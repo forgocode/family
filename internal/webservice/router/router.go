@@ -119,7 +119,8 @@ func Start() {
 		adminRouter.GET("/statistic/topictop5", statistic.TopicTOP5)
 		adminRouter.GET("/statistic/tagtop5", statistic.TagTOP5)
 		adminRouter.GET("/statistic/categorytop5", statistic.CategoryTOP5)
-		adminRouter.GET("/statistic/")
+		adminRouter.GET("/statistic/scoretop10", statistic.ScoreTop10)
+		adminRouter.GET("/statistic/userActive30", statistic.UserActive30)
 
 		adminRouter.GET("/version", system.GetVersion)
 		adminRouter.GET("/monitor", system.GetMonitor)

@@ -95,3 +95,16 @@ func CategoryTOP5(ctx *gin.Context) {
 	}
 	response.Success(ctx, result, 1)
 }
+
+func ScoreTop10(ctx *gin.Context) {
+	users, err := systemService.UserScoreTop()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, users, int64(len(users)))
+}
+
+func UserActive30(ctx *gin.Context) {
+
+}
