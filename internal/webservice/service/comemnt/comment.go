@@ -237,9 +237,16 @@ func banComment(commentID string) error {
 
 }
 
+func GetCommentCountByUserID(userID string) (int64, error) {
+	c := mysql.GetClient()
+	var count int64
+	result := c.C.Model(&model.CommunityComment{}).Where("authorID = ?", userID).Count(&count)
+	return count, result.Error
+}
+
 func unBanComment(commentID string) error {
 	c := mysql.GetClient()
-	result := c.C.Model(&model.User{}).Where("commentID = ?", commentID).Update("isShow", true)
+	result := c.C.Model(&model.CommunityComment{}).Where("commentID = ?", commentID).Update("isShow", true)
 	return result.Error
 }
 

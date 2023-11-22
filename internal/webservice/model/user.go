@@ -15,6 +15,7 @@ type User struct {
 	CreateTime    int64  `json:"createTime" bson:"createTime" gorm:"column:createTime"`
 	LastLoginTime int64  ` json:"lastLoginTime" bson:"lastLoginTime" gorm:"column:lastLoginTime"`
 	Score         int64  `json:"score" bson:"score" gorm:"column:score"`
+	Description   string `json:"description" bson:"description" gorm:"column:description"`
 	//1: man 2: women
 	Sex int `json:"sex" gorm:"column:sex"`
 }

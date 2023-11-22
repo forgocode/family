@@ -61,7 +61,6 @@ func AuthNormal() gin.HandlerFunc {
 		ctx.Request.Header.Set("role", strconv.Itoa(claims.Role))
 		ctx.Request.Header.Set("userID", claims.UserID)
 		ctx.Request.Header.Set("clientIP", ctx.ClientIP())
-		fmt.Println(11111, claims.UserName)
 		newlog.Logger.Infof("user:%s, auth successfully\n", claims.UserName)
 		ctx.Next()
 	}

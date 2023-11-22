@@ -109,6 +109,15 @@ func UserAddTrend() (interface{}, error) {
 	}
 	return trend, result.Error
 }
+func GetUserByUserID(userID string) (*model.User, error) {
+	c := mysql.GetClient()
+	var user model.User
+	result := c.C.Where("userID = ?", userID).Find(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
 
 func UserScoreTop() ([]model.User, error) {
 	c := mysql.GetClient()
@@ -185,16 +194,6 @@ func getUserByPhone(phone, passwd string) (*model.User, error) {
 	c := mysql.GetClient()
 	var user model.User
 	result := c.C.Where("phone = ? AND password = ?", phone, passwd).Find(&user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &user, nil
-}
-
-func getUserByUserID(userID string) (*model.User, error) {
-	c := mysql.GetClient()
-	var user model.User
-	result := c.C.Where("userID = ?", userID).Find(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

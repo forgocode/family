@@ -36,7 +36,7 @@ func Start() {
 		normalUserRouter.Use(middleware.AuthNormal())
 
 		//获取用户的所有个人信息
-		normalUserRouter.GET("info")
+		normalUserRouter.GET("/info", user.AdminGetUserInfo)
 
 		//查看所有标签，已启用
 		normalUserRouter.GET("/tags", tag.NormalGetAllTag)

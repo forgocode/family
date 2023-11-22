@@ -1,16 +1,57 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
 	"github.com/forgocode/family/internal/pkg/sendlog"
-	"github.com/forgocode/family/internal/webservice/service/system"
+	comemntService "github.com/forgocode/family/internal/webservice/service/comemnt"
+	systemService "github.com/forgocode/family/internal/webservice/service/system"
 	"github.com/forgocode/family/pkg/paginate"
 )
 
 func AdminGetUserInfo(ctx *gin.Context) {
+	type info struct {
+		UserID string `json:"userID" form:"userID"`
+	}
+
+	id := &info{}
+	fmt.Println(id)
+	err := ctx.ShouldBindQuery(id)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+
+	type result struct {
+		ArticleCount int64  `json:"articleCount"`
+		NickName     string `json:"nickName"`
+		Score        int64  `json:"score"`
+		ShortComment int64  `json:"shortComment"`
+		FollowCount  int64  `json:"followCount"`
+		Description  string `json:"description"`
+	}
+
+	user, err := systemService.GetUserByUserID(id.UserID)
+	if err != nil {
+		return
+	}
+	shortCount, err := comemntService.GetCommentCountByUserID(id.UserID)
+	if err != nil {
+		return
+	}
+	r := &result{
+		ArticleCount: 1,
+		NickName:     user.NickName,
+		Score:        user.Score,
+		ShortComment: shortCount,
+		FollowCount:  0,
+		Description:  "蒸饭机器人",
+	}
+	response.Success(ctx, r, 1)
 
 }
 
@@ -27,14 +68,14 @@ func AdminDeleteUser(ctx *gin.Context) {
 }
 
 func AdminCreateUser(ctx *gin.Context) {
-	user := &system.UIUser{}
+	user := &systemService.UIUser{}
 	err := ctx.ShouldBindJSON(user)
 	if err != nil {
 		newlog.Logger.Errorf("failed bind json, err: %+v\n", err)
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	err = system.AdminCreateUser(user)
+	err = systemService.AdminCreateUser(user)
 	if err != nil {
 		newlog.Logger.Errorf("failed to create user: %+v, err: %+v\n", user, err)
 		response.Failed(ctx, response.ErrDB)
@@ -54,7 +95,7 @@ func NormalGetAllUser(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	users, count, err := system.GetAllUser(q)
+	users, count, err := systemService.GetAllUser(q)
 	if err != nil {
 		response.Failed(ctx, response.ErrDB)
 		return
