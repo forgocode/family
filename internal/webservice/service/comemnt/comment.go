@@ -74,6 +74,62 @@ func UserCreateComment(comment *UIComment) error {
 	return createComment(comment.Convert())
 }
 
+func UserGetFirstComment() ([]UIComment, error) {
+	var comments []UIComment
+	first, err := findFirstLevelComment()
+	if err != nil {
+		return comments, err
+	}
+	for _, fc := range first {
+		f := UIComment{
+			User:         fc.UserName,
+			Context:      fc.Context,
+			AuthorID:     fc.AuthorID,
+			CommentID:    fc.CommentID,
+			CreateTime:   fc.CreateTime,
+			LikeCount:    fc.LikeCount,
+			UnLikeCount:  fc.UnLikeCount,
+			ParentID:     fc.ParentID,
+			IsShow:       fc.IsShow,
+			IsFirst:      fc.IsFirst,
+			TopCommentID: fc.TopCommentID,
+			Address:      fc.Address,
+			Topic:        fc.Topic,
+			Child:        nil,
+		}
+		comments = append(comments, f)
+	}
+	return comments, nil
+}
+
+func UserGetCommentByCommentID(commentID string) ([]UIComment, error) {
+	var comments []UIComment
+	result, err := findChildComment(commentID)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range result {
+		t := UIComment{
+			User:         v.UserName,
+			Context:      v.Context,
+			AuthorID:     v.AuthorID,
+			CommentID:    v.CommentID,
+			CreateTime:   v.CreateTime,
+			LikeCount:    v.LikeCount,
+			UnLikeCount:  v.UnLikeCount,
+			ParentID:     v.ParentID,
+			IsShow:       v.IsShow,
+			IsFirst:      v.IsFirst,
+			Child:        nil,
+			ReplayTo:     v.ReplayTo,
+			Address:      v.Address,
+			ReplayToUser: v.ReplayToUser,
+		}
+		comments = append(comments, t)
+	}
+	return comments, nil
+}
+
 func UserGetComment() ([]UIComment, error) {
 	var comments []UIComment
 	first, err := findFirstLevelComment()
@@ -198,6 +254,13 @@ func findSecondLevelComment(topCommentID, parentID string) ([]model.CommunityCom
 	c := mysql.GetClient()
 	var comments []model.CommunityComment
 	result := c.C.Model(&model.CommunityComment{}).Where("topCommentID = ? AND parentID = ?", topCommentID, parentID).Order("createTime desc").Offset(0).Limit(10).Find(&comments)
+	return comments, result.Error
+}
+
+func findChildComment(topCommentID string) ([]model.CommunityComment, error) {
+	c := mysql.GetClient()
+	var comments []model.CommunityComment
+	result := c.C.Model(&model.CommunityComment{}).Where("topCommentID = ?", topCommentID).Order("createTime desc").Offset(0).Limit(10).Find(&comments)
 	return comments, result.Error
 }
 
