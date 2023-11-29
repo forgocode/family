@@ -26,6 +26,8 @@ func Start() {
 		engine.POST("/login", system.Login)
 		//查看短评
 		engine.GET("/comment", comment.UserGetComment)
+		engine.GET("/firstcomment", comment.UserGetFirstComment)
+		engine.GET("/comment/child", comment.UserGetChildComment)
 		engine.GET("/article")
 		// 获取评论
 	}

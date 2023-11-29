@@ -43,3 +43,30 @@ func UserGetComment(ctx *gin.Context) {
 	}
 	response.Success(ctx, comments, 1)
 }
+
+func UserGetFirstComment(ctx *gin.Context) {
+	comments, err := commentService.UserGetFirstComment()
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, comments, 1)
+}
+
+func UserGetChildComment(ctx *gin.Context) {
+	type info struct {
+		CommentID string `json:"commentID" form:"commentID"`
+	}
+	var id info
+	err := ctx.ShouldBindQuery(&id)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	result, err := commentService.UserGetCommentByCommentID(id.CommentID)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, result, 1)
+}
