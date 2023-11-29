@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
+	"github.com/forgocode/family/internal/webservice/controller/article"
 	"github.com/forgocode/family/internal/webservice/controller/category"
 	"github.com/forgocode/family/internal/webservice/controller/comment"
 	"github.com/forgocode/family/internal/webservice/controller/like"
@@ -47,8 +48,9 @@ func Start() {
 		//查看所有话题
 		normalUserRouter.GET("/topic", topic.NormalGetAllTopic)
 		//新建文章
-		normalUserRouter.POST("/article")
+		normalUserRouter.POST("/article", article.CreateNewArticle)
 		//删除文章
+		normalUserRouter.GET("/article", article.NormalGetArticle)
 		normalUserRouter.DELETE("/article")
 		//更新文章，可隐藏
 		normalUserRouter.PUT("/article")
@@ -98,6 +100,7 @@ func Start() {
 		adminRouter.PUT("/category", category.AdminUpdateCategory)
 		//删除分类
 		adminRouter.DELETE("/category", category.AdminDeleteCategory)
+		adminRouter.GET("/article", article.AdminGetArticle)
 
 		adminRouter.GET("/topic", topic.AdminGetAllTopic)
 		adminRouter.POST("/topic", topic.AdminCreateTopic)
