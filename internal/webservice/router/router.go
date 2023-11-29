@@ -51,6 +51,7 @@ func Start() {
 		normalUserRouter.POST("/article", article.CreateNewArticle)
 		//删除文章
 		normalUserRouter.GET("/article", article.NormalGetArticle)
+		normalUserRouter.GET("/article/:id", article.NormalGetArticleInfo)
 		normalUserRouter.DELETE("/article")
 		//更新文章，可隐藏
 		normalUserRouter.PUT("/article")

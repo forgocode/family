@@ -40,6 +40,10 @@ func (u *UIArticle) Convert() *model.Article {
 		IsOriginal:   u.IsOriginal,
 		OriginalUrl:  u.OriginalUrl,
 		OriginalUser: u.OriginalUser,
+		Title:        u.Title,
+		Tags:         u.Tags,
+		Category:     u.Category,
+		Introduction: u.Introduction,
 		IsShow:       1,
 	}
 }
@@ -64,6 +68,10 @@ func NormalGetArticleList(q *paginate.PageQuery) ([]model.Article, error) {
 	return normalGetAllArticle(q)
 }
 
+func GetArticleInfoByArticleID(id string) (model.Article, error) {
+	return getArticleInfoByID(id)
+}
+
 func getAllArticle(q *paginate.PageQuery) ([]model.Article, error) {
 	c := mysql.GetClient()
 	var articles []model.Article
@@ -76,6 +84,13 @@ func normalGetAllArticle(q *paginate.PageQuery) ([]model.Article, error) {
 	var articles []model.Article
 	result := c.C.Model(&model.Article{}).Where("isShow = 1").Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
 	return articles, result.Error
+}
+
+func getArticleInfoByID(id string) (model.Article, error) {
+	c := mysql.GetClient()
+	var article model.Article
+	result := c.C.Model(&model.Article{}).Where("articleID= ?", id).Find(&article)
+	return article, result.Error
 }
 
 func createArticle(a *model.Article) error {

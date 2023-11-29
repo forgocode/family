@@ -3,10 +3,11 @@ package article
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/forgocode/family/internal/pkg/response"
 	articleService "github.com/forgocode/family/internal/webservice/service/article"
 	"github.com/forgocode/family/pkg/paginate"
-	"github.com/gin-gonic/gin"
 )
 
 func CreateNewArticle(ctx *gin.Context) {
@@ -49,4 +50,14 @@ func NormalGetArticle(ctx *gin.Context) {
 		return
 	}
 	response.Success(ctx, articles, int64(len(articles)))
+}
+
+func NormalGetArticleInfo(ctx *gin.Context) {
+	articleID := ctx.Param("id")
+	info, err := articleService.GetArticleInfoByArticleID(articleID)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, info, 1)
 }
