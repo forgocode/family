@@ -27,7 +27,8 @@ type Article struct {
 	Context    string `json:"context" bson:"context" gorm:"column:context"`
 	CreateTime int64  `json:"createTime" bson:"createTime" gorm:"column:createTime"`
 	// 点赞数
-	LikeCount      int32  `json:"likeCount" bson:"likeCount" gorm:"column:likeCount"`
+	LikeCount int32 `json:"likeCount" bson:"likeCount" gorm:"column:likeCount"`
+	//1: 正常显示 2: 审核中 3： 封禁 4： 草稿状态
 	IsShow         int    `json:"isShow" bson:"isShow" gorm:"column:isShow"`
 	IsShortArticle bool   `json:"isShortArticle" bson:"isShortArticle" gorm:"column:isShortArticle"`
 	ViewCount      int32  `json:"viewCount" bson:"viewCount" gorm:"column:viewCount"`
