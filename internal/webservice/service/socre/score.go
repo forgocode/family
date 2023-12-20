@@ -22,7 +22,7 @@ func AddScore(userID string, reason model.ScoreType) error {
 	if err != nil {
 		return err
 	}
-	return addCoreToUser(userID, s.Score)
+	return addScoreToUser(userID, s.Score)
 }
 
 func createScore(s *model.Score) error {
@@ -30,10 +30,10 @@ func createScore(s *model.Score) error {
 	return c.C.Create(s).Error
 }
 
-func addCoreToUser(userID string, target int16) error {
-	score, err := systemService.GetUserCore(userID)
+func addScoreToUser(userID string, target int16) error {
+	score, err := systemService.GetUserScore(userID)
 	if err != nil {
 		return err
 	}
-	return systemService.UpdateUserCore(userID, score+int64(target))
+	return systemService.UpdateUserScore(userID, score+int64(target))
 }

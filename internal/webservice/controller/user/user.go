@@ -55,16 +55,41 @@ func AdminGetUserInfo(ctx *gin.Context) {
 
 }
 
-func AdminBanUser(ctx *gin.Context) {
-
-}
-
-func AdminUnBanUser(ctx *gin.Context) {
-
+func AdminUpdateUser(ctx *gin.Context) {
+	type tmpT struct {
+		UserID string `json:"userID"`
+		IsShow bool   `json:"isShow"`
+	}
+	info := &tmpT{}
+	err := ctx.ShouldBind(&info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	err = systemService.UpdateUser(info.UserID, info.IsShow)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, "", 1)
 }
 
 func AdminDeleteUser(ctx *gin.Context) {
-
+	type tmpT struct {
+		UserID string `json:"userID"`
+	}
+	info := &tmpT{}
+	err := ctx.ShouldBind(&info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	err = systemService.DeleteUser(info.UserID)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, "", 1)
 }
 
 func AdminCreateUser(ctx *gin.Context) {

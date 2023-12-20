@@ -46,7 +46,10 @@ func AdminUpdateCategory(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
-	category.AdminUpdateCategory(info.Uuid, info.IsShow)
+	err = category.AdminUpdateCategory(info.Uuid, info.IsShow)
+	if err != nil {
+		return
+	}
 	if err != nil {
 		response.Failed(ctx, response.ErrDB)
 		return

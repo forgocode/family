@@ -61,3 +61,55 @@ func NormalGetArticleInfo(ctx *gin.Context) {
 	}
 	response.Success(ctx, info, 1)
 }
+
+func AdminPublishArticle(ctx *gin.Context) {
+	type ID struct {
+		ArticleID string `json:"articleID"`
+	}
+	info := &ID{}
+	err := ctx.ShouldBindJSON(info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	err = articleService.PublishArticle(info.ArticleID)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, info, 1)
+}
+func AdminBanArticle(ctx *gin.Context) {
+	type ID struct {
+		ArticleID string `json:"articleID"`
+	}
+	info := &ID{}
+	err := ctx.ShouldBindJSON(info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	err = articleService.BanArticle(info.ArticleID)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, info, 1)
+}
+func AdminSendBackArticle(ctx *gin.Context) {
+	type ID struct {
+		ArticleID string `json:"articleID"`
+	}
+	info := &ID{}
+	err := ctx.ShouldBindJSON(info)
+	if err != nil {
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
+	err = articleService.SendBackArticle(info.ArticleID)
+	if err != nil {
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	response.Success(ctx, info, 1)
+}

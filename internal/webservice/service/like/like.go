@@ -33,6 +33,29 @@ func GiveLike(uid string, uilike *UILike) error {
 		return errors.New("already review this item")
 	}
 	//获取点赞数
+	if like.Type == 1 {
+		count, err := commentService.GetCommentLikeCount(uilike.ID, uilike.Like)
+		if err != nil {
+			return err
+		}
+		if uilike.IsCancel {
+			//更新点赞数 取消赞
+			err = deleteGiveLike(like)
+			if err != nil {
+				return err
+			}
+			return commentService.UpdateCommentLike(uilike.ID, uilike.Like, count-1)
+		}
+		err = createGiveLike(like)
+		if err != nil {
+			return err
+		}
+
+		//更新点赞数
+		return commentService.UpdateCommentLike(uilike.ID, uilike.Like, count+1)
+	}
+
+	//todo: 更新文章点赞数
 	count, err := commentService.GetCommentLikeCount(uilike.ID, uilike.Like)
 	if err != nil {
 		return err
@@ -52,6 +75,7 @@ func GiveLike(uid string, uilike *UILike) error {
 
 	//更新点赞数
 	return commentService.UpdateCommentLike(uilike.ID, uilike.Like, count+1)
+
 }
 
 func createGiveLike(like *model.GiveLike) error {

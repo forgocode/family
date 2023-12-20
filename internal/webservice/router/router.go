@@ -36,7 +36,7 @@ func Start() {
 	{
 		normalUserRouter := engine.Group("/normalUser")
 
-		normalUserRouter.Use(middleware.AuthNormal())
+		//normalUserRouter.Use(middleware.AuthNormal())
 
 		//获取用户的所有个人信息
 		normalUserRouter.GET("/info", user.AdminGetUserInfo)
@@ -78,7 +78,9 @@ func Start() {
 
 		// adminRouter.Use(middleware.AuthAdmin())
 		//(解)封禁用户
-		adminRouter.PUT("/user/ban")
+		adminRouter.PUT("/user", user.AdminUpdateUser)
+
+		adminRouter.DELETE("/user", user.AdminDeleteUser)
 		// 新增用户
 		adminRouter.POST("/user", user.AdminCreateUser)
 		//获取所有用户
@@ -111,7 +113,9 @@ func Start() {
 		adminRouter.DELETE("/topic", topic.AdminDeleteTopic)
 
 		//审核所有文章，封禁文章
-		adminRouter.PUT("/article")
+		adminRouter.PUT("/article/publish", article.AdminPublishArticle)
+		adminRouter.PUT("/article/ban", article.AdminBanArticle)
+		adminRouter.PUT("/article/sendback", article.AdminSendBackArticle)
 
 		//查看系统日志
 		adminRouter.GET("/systemLog")
@@ -130,6 +134,8 @@ func Start() {
 
 		adminRouter.GET("/version", system.GetVersion)
 		adminRouter.GET("/monitor", system.GetMonitor)
+
+		adminRouter.PUT("/switch")
 	}
 	//超级管理员
 	{

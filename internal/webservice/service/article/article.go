@@ -44,12 +44,24 @@ func (u *UIArticle) Convert() *model.Article {
 		Tags:         u.Tags,
 		Category:     u.Category,
 		Introduction: u.Introduction,
-		IsShow:       1,
+		IsShow:       u.IsShow,
 	}
 }
 
 func CreateArticle(a *UIArticle) error {
 	return createArticle(a.Convert())
+}
+
+func PublishArticle(articleID string) error {
+	return publishArticle(articleID)
+}
+
+func BanArticle(articleID string) error {
+	return banArticle(articleID)
+}
+
+func SendBackArticle(articleID string) error {
+	return sendBackArticle(articleID)
 }
 
 func AdminGetArticleList(q *paginate.PageQuery) ([]model.Article, int64, error) {
@@ -72,17 +84,32 @@ func GetArticleInfoByArticleID(id string) (model.Article, error) {
 	return getArticleInfoByID(id)
 }
 
+func publishArticle(articleID string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Article{}).Where("articleID = ?", articleID).Update("isShow", model.ArticleShow).Error
+}
+
+func banArticle(articleID string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Article{}).Where("articleID = ?", articleID).Update("isShow", model.ArticleBanned).Error
+}
+
+func sendBackArticle(articleID string) error {
+	c := mysql.GetClient()
+	return c.C.Model(&model.Article{}).Where("articleID = ?", articleID).Update("isShow", model.ArticleSendBack).Error
+}
+
 func getAllArticle(q *paginate.PageQuery) ([]model.Article, error) {
 	c := mysql.GetClient()
 	var articles []model.Article
-	result := c.C.Model(&model.Article{}).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
+	result := c.C.Model(&model.Article{}).Where("isShow != ?", model.ArticleDraft).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
 	return articles, result.Error
 }
 
 func normalGetAllArticle(q *paginate.PageQuery) ([]model.Article, error) {
 	c := mysql.GetClient()
 	var articles []model.Article
-	result := c.C.Model(&model.Article{}).Where("isShow = 1").Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
+	result := c.C.Model(&model.Article{}).Where("isShow = ?", model.ArticleShow).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
 	return articles, result.Error
 }
 

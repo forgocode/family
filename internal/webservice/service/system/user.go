@@ -42,13 +42,24 @@ func (u *UIUser) Convert() *model.User {
 	}
 }
 
-func UpdateUserCore(uid string, score int64) error {
+func UpdateUserScore(uid string, score int64) error {
 	c := mysql.GetClient()
 	return c.C.Model(&model.User{}).Where("userID = ?", uid).Update("score", score).Error
 
 }
 
-func GetUserCore(uid string) (int64, error) {
+func DeleteUser(userID string) error {
+	return deleteUser(userID)
+}
+
+func UpdateUser(userID string, isShow bool) error {
+	if isShow {
+		return unBanUser(userID)
+	}
+	return banUser(userID)
+}
+
+func GetUserScore(uid string) (int64, error) {
 	c := mysql.GetClient()
 	var u model.User
 	result := c.C.Model(&model.User{}).Where("userID = ?", uid).Find(&u)

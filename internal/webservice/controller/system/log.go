@@ -22,5 +22,4 @@ func AdminGetOperationLog(ctx *gin.Context) {
 		return
 	}
 	response.Success(ctx, result, count)
-
 }
