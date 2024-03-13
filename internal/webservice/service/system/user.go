@@ -8,7 +8,6 @@ import (
 	"github.com/forgocode/family/internal/webservice/database/mysql"
 	"github.com/forgocode/family/internal/webservice/model"
 	"github.com/forgocode/family/pkg/paginate"
-	"github.com/forgocode/family/pkg/userid"
 )
 
 type UIUser struct {
@@ -26,7 +25,7 @@ type UIUser struct {
 
 func (u *UIUser) Convert() *model.User {
 	return &model.User{
-		UserID:        userid.GetUserID(),
+		UserID:        u.UID,
 		NickName:      u.NickName,
 		Password:      u.Password,
 		Theme:         "",
@@ -34,7 +33,7 @@ func (u *UIUser) Convert() *model.User {
 		Role:          u.Role,
 		Phone:         u.Phone,
 		Email:         u.Email,
-		Status:        0,
+		Status:        model.UserIsNormal,
 		CreateTime:    time.Now().UnixMilli(),
 		LastLoginTime: 0,
 		Score:         0,

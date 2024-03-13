@@ -84,7 +84,7 @@ func AuthAdmin() gin.HandlerFunc {
 		if err != nil {
 			newlog.Logger.Errorf("failed to parse token, err:%+v\n", err)
 		}
-		if claims.Role != model.Admin {
+		if claims.Role != model.Admin && claims.Role != model.SuperAdmin {
 			ctx.Abort()
 			return
 		}

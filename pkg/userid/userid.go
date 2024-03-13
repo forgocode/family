@@ -11,5 +11,5 @@ const SuperAdministrator = 10000000
 func GetUserID() string {
 	rand.NewSource(time.Now().Unix())
 	id := rand.Intn(89999999)
-	return strconv.Itoa(id + SuperAdministrator)
+	return "u_" + strconv.Itoa(id+SuperAdministrator)
 }

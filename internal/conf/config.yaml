@@ -7,18 +7,18 @@ base:
 mysql:
   ip: "mysql.test.com"
   port: 3306
-  user: test
-  password: test
+  user: root
+  password: 123456
   db: test
 
 redis:
   ip: "redis.test.com"
   port: 6379
-  password: "testredis"
+  password: ""
 
 mongo:
   ip: "mongo.test.com"
   port: 27017
   db: "mytest"
-  user: "root"
-  password: "testmongo"
+  user: ""
+  password: ""

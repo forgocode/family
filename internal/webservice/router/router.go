@@ -6,6 +6,7 @@ import (
 	"github.com/forgocode/family/internal/webservice/controller/article"
 	"github.com/forgocode/family/internal/webservice/controller/category"
 	"github.com/forgocode/family/internal/webservice/controller/comment"
+	"github.com/forgocode/family/internal/webservice/controller/group"
 	"github.com/forgocode/family/internal/webservice/controller/like"
 	"github.com/forgocode/family/internal/webservice/controller/statistic"
 	"github.com/forgocode/family/internal/webservice/controller/system"
@@ -36,7 +37,7 @@ func Start() {
 	{
 		normalUserRouter := engine.Group("/normalUser")
 
-		//normalUserRouter.Use(middleware.AuthNormal())
+		normalUserRouter.Use(middleware.AuthNormal())
 
 		//获取用户的所有个人信息
 		normalUserRouter.GET("/info", user.AdminGetUserInfo)
@@ -70,13 +71,16 @@ func Start() {
 
 		//删除好友
 
+		normalUserRouter.GET("/grouplist", group.GetAllGroupByUserUID)
+		normalUserRouter.GET("/groupmember/:id", group.GetMemberByGroupUID)
+
 	}
 
 	//管理员
 	{
 		adminRouter := engine.Group("/admin")
 
-		// adminRouter.Use(middleware.AuthAdmin())
+		adminRouter.Use(middleware.AuthAdmin())
 		//(解)封禁用户
 		adminRouter.PUT("/user", user.AdminUpdateUser)
 

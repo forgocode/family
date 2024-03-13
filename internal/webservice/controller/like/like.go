@@ -1,8 +1,6 @@
 package like
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/forgocode/family/internal/pkg/response"
@@ -20,7 +18,6 @@ func GiveLike(ctx *gin.Context) {
 
 	err = like_service.GiveLike(uid, info)
 	if err != nil {
-		fmt.Printf("11111 %+v\n", err)
 		response.Failed(ctx, response.ErrDB)
 		return
 	}

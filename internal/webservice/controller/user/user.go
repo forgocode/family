@@ -2,15 +2,20 @@ package user
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
 	"github.com/forgocode/family/internal/pkg/sendlog"
+	"github.com/forgocode/family/internal/webservice/model"
 	comemntService "github.com/forgocode/family/internal/webservice/service/comemnt"
+	relationService "github.com/forgocode/family/internal/webservice/service/relation"
 	systemService "github.com/forgocode/family/internal/webservice/service/system"
+	"github.com/forgocode/family/pkg/groupid"
 	"github.com/forgocode/family/pkg/paginate"
+	"github.com/forgocode/family/pkg/userid"
 )
 
 func AdminGetUserInfo(ctx *gin.Context) {
@@ -61,7 +66,7 @@ func AdminUpdateUser(ctx *gin.Context) {
 		IsShow bool   `json:"isShow"`
 	}
 	info := &tmpT{}
-	err := ctx.ShouldBind(&info)
+	err := ctx.ShouldBind(info)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct)
 		return
@@ -79,7 +84,7 @@ func AdminDeleteUser(ctx *gin.Context) {
 		UserID string `json:"userID"`
 	}
 	info := &tmpT{}
-	err := ctx.ShouldBind(&info)
+	err := ctx.ShouldBind(info)
 	if err != nil {
 		response.Failed(ctx, response.ErrStruct)
 		return
@@ -100,9 +105,16 @@ func AdminCreateUser(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
+	user.UID = userid.GetUserID()
 	err = systemService.AdminCreateUser(user)
 	if err != nil {
 		newlog.Logger.Errorf("failed to create user: %+v, err: %+v\n", user, err)
+		response.Failed(ctx, response.ErrDB)
+		return
+	}
+	err = relationService.AddUserGroupRelation(user.UID, strconv.Itoa(groupid.SuperAdministratorGroup), model.GroupNormalMember)
+	if err != nil {
+		newlog.Logger.Errorf("failed to add user %+v to group: %d, err: %+v\n", user, groupid.SuperAdministratorGroup, err)
 		response.Failed(ctx, response.ErrDB)
 		return
 	}

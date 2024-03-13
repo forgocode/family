@@ -34,7 +34,7 @@ func ReceiveClientComm(ctx *gin.Context) {
 	userName := ctx.Request.Header.Get("userName")
 	fmt.Printf("uid: %s, userName: %s\n", userID, userName)
 	if userID == "" {
-		newlog.Logger.Errorf("failed ot get uuid from header\n")
+		newlog.Logger.Errorf("failed to get uuid from header\n")
 		return
 	}
 	web_im.AddWebSocketClient(userID, userName, c)
