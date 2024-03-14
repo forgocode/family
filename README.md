@@ -74,3 +74,13 @@ minio
 
 
 ## 系统架构
+
+
+## 启动方式
+### linux
+1. 在项目的根目录下执行 `make prepare`，如果没有docker，需要手动安装。
+2. 等待环境安装结束之后，执行`make build`来启动后台服务.如果没有go，需要手动安装，推荐go 1.20以上
+
+note: 如果已经有MySQL数据库和redis数据库，可以手动修改 /root/tmp/.cofig.yaml配置数据库，之后通过`make build`来启动后台服务
+
+### windows 

@@ -8,10 +8,10 @@ prepare:
 	@echo "10.182.34.112 mysql.test.com" >> /etc/hosts
 	@echo "10.182.34.112 redis.test.com" >> /etc/hosts
 	@echo "10.182.34.112 mongo.test.com" >> /etc/hosts
-
 	@echo "system prepare ready"
-
 	@cp ./internal/conf/config.yaml /root/tmp/.config.yaml
+	@echo "prepare db env"
+	@bash ./scripts/prepare.sh
 
 .PHONY:
 messagegrpc:
@@ -30,3 +30,13 @@ noticegrpc:
 	@protoc --go_out=./internal/grpcserver/proto/station_notice/ ./internal/grpcserver/proto/station_notice/station_notice.proto
 	@protoc --go-grpc_out=./internal/grpcserver/proto/station_notice/ ./internal/grpcserver/proto/station_notice/station_notice.proto
 	@echo "station_notice grpc protobuf generate successfully"
+	
+.PHONY:
+build:
+	@rm -rf bin
+	@mkdir bin
+	@go build -o bin/family_webservice cmd/webservice/main.go
+	@echo "build family_webservice successfully!"
+	@./bin/family_webservice
+
+
