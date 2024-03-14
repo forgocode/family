@@ -29,3 +29,18 @@ func sendMsgToUser(uid string, data []byte) error {
 	}
 	return nil
 }
+
+func sendMsgToGroupMember(groupUID, fromUID string, data []byte) {
+	users := client_manager.GetGroupMemberByGroupUID(groupUID)
+	for _, u := range users {
+		if fromUID == u {
+			continue
+		}
+		toC, _ := client_manager.FindClientByUid(u)
+		err := toC.Client.WriteMessage(1, data)
+		if err != nil {
+			newlog.Logger.Errorf("write: %+v\n", err)
+			return
+		}
+	}
+}

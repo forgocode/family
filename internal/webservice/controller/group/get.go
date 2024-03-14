@@ -3,6 +3,7 @@ package group
 import (
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
+	client_manager "github.com/forgocode/family/internal/webservice/im_server/client"
 	group_service "github.com/forgocode/family/internal/webservice/service/group"
 	"github.com/forgocode/family/pkg/paginate"
 	"github.com/gin-gonic/gin"
@@ -31,5 +32,10 @@ func GetMemberByGroupUID(ctx *gin.Context) {
 		response.Failed(ctx, response.ErrDB)
 		return
 	}
+	var users []string
+	for _, r := range result {
+		users = append(users, r.UserID)
+	}
+	client_manager.SetGroupMember(groupID, users)
 	response.Success(ctx, result, int64(len(result)))
 }

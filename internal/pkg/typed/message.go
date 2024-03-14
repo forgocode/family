@@ -22,6 +22,10 @@ const (
 	SystemBroadCast = iota + 1
 	// 系统忙 不存mongo
 	SystemIsBusy
+	// 组消息
+	GroupMessage
+	// 私聊消息
+	ToPeopleMessage
 )
 
 type WebSocketClient struct {

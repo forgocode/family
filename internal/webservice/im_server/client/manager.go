@@ -10,13 +10,15 @@ import (
 )
 
 type clientManager struct {
-	clients sync.Map
+	clients   sync.Map
+	group2UID sync.Map
 }
 
 const offLineDuration = 30
 
 var manager = &clientManager{
-	clients: sync.Map{},
+	clients:   sync.Map{},
+	group2UID: sync.Map{},
 }
 
 func AddClient(uid string, c *typed.WebSocketClient) {
@@ -33,6 +35,17 @@ func DeleteClient(uid string) {
 	if err != nil {
 		newlog.Logger.Errorf("failed to delete client from redis, err: %+v\n", err)
 	}
+}
+
+func SetGroupMember(groupUID string, users []string) {
+	manager.group2UID.Store(groupUID, users)
+}
+
+func GetGroupMemberByGroupUID(groupUID string) []string {
+	if v, ok := manager.group2UID.Load(groupUID); ok {
+		return v.([]string)
+	}
+	return []string{}
 }
 
 func FindClientByUid(uid string) (*typed.WebSocketClient, error) {
