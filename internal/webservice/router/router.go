@@ -1,6 +1,8 @@
 package router
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/forgocode/family/internal/webservice/controller/article"
@@ -15,9 +17,12 @@ import (
 	"github.com/forgocode/family/internal/webservice/controller/user"
 	"github.com/forgocode/family/internal/webservice/controller/web_im"
 	"github.com/forgocode/family/internal/webservice/middleware"
+	"github.com/forgocode/family/pkg/bininfo"
 )
 
 func Start() {
+	gin.SetMode(bininfo.GinLogMode)
+	bininfo.StartTime = time.Now().UnixMilli()
 	engine := gin.New()
 	engine.Use(middleware.Logger(), middleware.Recovery())
 	//engine.Use(gin.Logger())

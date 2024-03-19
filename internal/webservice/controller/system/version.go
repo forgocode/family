@@ -9,14 +9,28 @@ import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 
-	"github.com/forgocode/family/internal/conf"
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/pkg/response"
+	"github.com/forgocode/family/pkg/bininfo"
 )
 
 func GetVersion(ctx *gin.Context) {
-	info := conf.GetConfig().Base
-	response.Success(ctx, info, 1)
+	type tmp struct {
+		SystemName string `json:"systemName" yaml:"systemName"`
+		Version    string `json:"version" yaml:"version"`
+		CommitID   string `json:"commitID" yaml:"commitID"`
+		BuildTime  string `json:"buildTime" yaml:"buildTime"`
+		GoVersion  string `json:"goVersion" yaml:"goVersion"`
+	}
+	version := &tmp{
+		SystemName: bininfo.SystemName,
+		Version:    bininfo.Version,
+		GoVersion:  bininfo.GoVersion,
+		BuildTime:  bininfo.BuildTime,
+		CommitID:   bininfo.CommitID,
+	}
+
+	response.Success(ctx, version, 1)
 }
 
 func GetMonitor(ctx *gin.Context) {
@@ -27,7 +41,7 @@ func GetMonitor(ctx *gin.Context) {
 		TotalMemory uint64  `json:"totalMemory"`
 		UsedDisk    uint64  `json:"usedDisk"`
 		TotalDisk   uint64  `json:"totalDisk"`
-		RunningTime int     `json:"runningTime"`
+		RunningTime int64   `json:"runningTime"`
 	}
 	totalMemory, usedMemory := getMemoryInfo()
 	totalDisk, usedDisk := getDiskInfo()
@@ -39,7 +53,7 @@ func GetMonitor(ctx *gin.Context) {
 		TotalMemory: totalMemory / 1024 / 1024 / 1024,
 		UsedDisk:    usedDisk / 1024 / 1024 / 1024,
 		TotalDisk:   totalDisk / 1024 / 1024 / 1024,
-		RunningTime: 0,
+		RunningTime: time.Now().UnixMilli() - bininfo.StartTime,
 	}
 	response.Success(ctx, result, 1)
 
