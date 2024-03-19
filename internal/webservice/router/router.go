@@ -30,7 +30,8 @@ func Start() {
 		engine.GET("/comment", comment.UserGetComment)
 		engine.GET("/firstcomment", comment.UserGetFirstComment)
 		engine.GET("/comment/child", comment.UserGetChildComment)
-		engine.GET("/article")
+		engine.GET("/article", article.NormalGetArticle)
+		engine.GET("/article/:id", article.NormalGetArticleInfo)
 		// 获取评论
 	}
 	//普通用户

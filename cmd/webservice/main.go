@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
-
 	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/forgocode/family/internal/webservice/database"
 	"github.com/forgocode/family/internal/webservice/im_server/message"
 	"github.com/forgocode/family/internal/webservice/router"
+	_ "net/http/pprof"
+	"os"
 )
 
 func main() {

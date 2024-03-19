@@ -74,6 +74,6 @@ func Login(ctx *gin.Context) {
 			"token":    token,
 			"userID":   user.UserID,
 			"role":     user.Role,
-			"userName": user.UserName,
+			"userName": user.NickName,
 		})
 }
