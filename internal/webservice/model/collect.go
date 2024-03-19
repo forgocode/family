@@ -1,5 +1,6 @@
 package model
 
+// 收藏
 type Collect struct {
 	ID       string `json:"ID" gorm:"column:ID"`
 	UserID   string `json:"UserID" gorm:"column:userID"`
