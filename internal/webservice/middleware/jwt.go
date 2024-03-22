@@ -97,7 +97,7 @@ func AuthAdmin() gin.HandlerFunc {
 		ctx.Request.Header.Set("userName", claims.UserName)
 		ctx.Request.Header.Set("role", strconv.Itoa(claims.Role))
 		ctx.Request.Header.Set("userID", claims.UserID)
-		newlog.Logger.Infof("user:%s, auth successfully", claims.UserName)
+		newlog.Logger.Infof("user:%s, auth successfully\n", claims.UserName)
 		ctx.Next()
 	}
 }

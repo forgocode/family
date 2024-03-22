@@ -102,14 +102,14 @@ func sendBackArticle(articleID string) error {
 func getAllArticle(q *paginate.PageQuery) ([]model.Article, error) {
 	c := mysql.GetClient()
 	var articles []model.Article
-	result := c.C.Model(&model.Article{}).Where("isShow != ?", model.ArticleDraft).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
+	result := c.C.Model(&model.Article{}).Where("isShow != ?", model.ArticleDraft).Scopes(paginate.ParseQuery(*q)).Find(&articles)
 	return articles, result.Error
 }
 
 func normalGetAllArticle(q *paginate.PageQuery) ([]model.Article, error) {
 	c := mysql.GetClient()
 	var articles []model.Article
-	result := c.C.Model(&model.Article{}).Where("isShow = ?", model.ArticleShow).Order("createTime desc").Offset((q.Page - 1) * q.PageSize).Limit(q.PageSize).Find(&articles)
+	result := c.C.Model(&model.Article{}).Where("isShow != ?", model.ArticleShow).Scopes(paginate.ParseQuery(*q)).Find(&articles)
 	return articles, result.Error
 }
 
@@ -130,4 +130,18 @@ func getArticleCount() (int64, error) {
 	var count int64
 	result := c.C.Model(&model.Article{}).Count(&count)
 	return count, result.Error
+}
+
+func getArticleByAuthorID(authorID string) ([]model.Article, error) {
+	c := mysql.GetClient()
+	c.C.Model(&model.Article{}).Scopes()
+	return nil, nil
+}
+
+func getArticleByCategory(category string) ([]model.Article, error) {
+	return nil, nil
+}
+
+func getArticleByTags(tag string) ([]model.Article, error) {
+	return nil, nil
 }

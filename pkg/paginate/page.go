@@ -63,11 +63,19 @@ func Order(sorts []Sort) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func ParseQuery(q PageQuery) *gorm.DB {
-	return nil
+func ParseQuery(q PageQuery) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		resultDB := db
+		for _, v := range q.Conditions {
+			resultDB.Scopes(QueryFilter(v.Field, v.Value, v.Operation))
+		}
+		resultDB.Scopes(Order(q.Sorts))
+		resultDB.Scopes(QueryLimitShip(q.Page, q.PageSize))
+		return resultDB
+	}
 }
 
-func StringFilter(key string, value interface{}, operation int) func(db *gorm.DB) *gorm.DB {
+func QueryFilter(key string, value interface{}, operation int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		resultDB := db
 		if value == "" {
@@ -90,6 +98,12 @@ func StringFilter(key string, value interface{}, operation int) func(db *gorm.DB
 			}
 		}
 		return resultDB
+	}
+}
+
+func QueryLimitShip(page, pageSize int) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Offset((page - 1) * pageSize).Limit(pageSize)
 	}
 }
 
