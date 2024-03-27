@@ -17,6 +17,7 @@ import (
 	"github.com/forgocode/family/internal/webservice/controller/user"
 	"github.com/forgocode/family/internal/webservice/controller/web_im"
 	"github.com/forgocode/family/internal/webservice/middleware"
+	"github.com/forgocode/family/internal/webservice/router/base"
 	"github.com/forgocode/family/pkg/bininfo"
 )
 
@@ -27,6 +28,7 @@ func Start() {
 	engine.Use(middleware.Logger(), middleware.Recovery())
 	//engine.Use(gin.Logger())
 
+	base.RegisterRouter(engine)
 	//游客
 	{
 		engine.POST("/register", system.Register)
@@ -35,8 +37,7 @@ func Start() {
 		engine.GET("/comment", comment.UserGetComment)
 		engine.GET("/firstcomment", comment.UserGetFirstComment)
 		engine.GET("/comment/child", comment.UserGetChildComment)
-		engine.GET("/article", article.NormalGetArticle)
-		engine.GET("/article/:id", article.NormalGetArticleInfo)
+
 		// 获取评论
 	}
 	//普通用户
@@ -113,7 +114,6 @@ func Start() {
 		adminRouter.PUT("/category", category.AdminUpdateCategory)
 		//删除分类
 		adminRouter.DELETE("/category", category.AdminDeleteCategory)
-		adminRouter.GET("/article", article.AdminGetArticle)
 
 		adminRouter.GET("/topic", topic.AdminGetAllTopic)
 		adminRouter.POST("/topic", topic.AdminCreateTopic)
@@ -121,11 +121,6 @@ func Start() {
 		adminRouter.PUT("/topic", topic.AdminUpdateTopic)
 		//删除话题
 		adminRouter.DELETE("/topic", topic.AdminDeleteTopic)
-
-		//审核所有文章，封禁文章
-		adminRouter.PUT("/article/publish", article.AdminPublishArticle)
-		adminRouter.PUT("/article/ban", article.AdminBanArticle)
-		adminRouter.PUT("/article/sendback", article.AdminSendBackArticle)
 
 		//查看系统日志
 		adminRouter.GET("/systemLog")
@@ -145,7 +140,6 @@ func Start() {
 		adminRouter.GET("/version", system.GetVersion)
 		adminRouter.GET("/monitor", system.GetMonitor)
 
-		adminRouter.PUT("/switch")
 	}
 	//超级管理员
 	{

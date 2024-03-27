@@ -14,7 +14,6 @@ func CreateNewArticle(ctx *gin.Context) {
 	info := &articleService.UIArticle{}
 	err := ctx.ShouldBindJSON(info)
 	if err != nil {
-		fmt.Println(err)
 		response.Failed(ctx, response.ErrStruct)
 		return
 	}
@@ -43,7 +42,12 @@ func AdminGetArticle(ctx *gin.Context) {
 }
 
 func NormalGetArticle(ctx *gin.Context) {
-	q := &paginate.PageQuery{Page: 1, PageSize: 15}
+	q, err := paginate.GetPageQuery(ctx)
+	if err != nil {
+		fmt.Printf("error: %+v\n", err)
+		response.Failed(ctx, response.ErrStruct)
+		return
+	}
 	articles, err := articleService.NormalGetArticleList(q)
 	if err != nil {
 		response.Failed(ctx, response.ErrDB)

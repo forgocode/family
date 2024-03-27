@@ -3,6 +3,7 @@ package logserver
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"time"
 
@@ -45,9 +46,9 @@ func (s *Server) AddOperationLog(ctx context.Context, msg *logproto.OperationLog
 	}
 }
 
-func Start() {
+func Start(port uint64) {
 	go handleOperation()
-	listener, err := net.Listen("tcp", ":10000")
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		newlog.Logger.Errorf("failed to listen 10000 port: %+v\n", err)
 		return

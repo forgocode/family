@@ -1,6 +1,10 @@
 package paginate
 
 import (
+	"encoding/json"
+	"strconv"
+
+	"github.com/forgocode/family/internal/pkg/newlog"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -39,12 +43,45 @@ const (
 )
 
 func GetPageQuery(ctx *gin.Context) (*PageQuery, error) {
+
 	page := &PageQuery{}
-	err := ctx.ShouldBindQuery(page)
-	if err != nil {
-		return nil, err
+	s := []Sort{}
+	conditons := []Condition{}
+	pageNumber := 0
+	pageSize := 0
+	if orderStr, ok := ctx.GetQuery("sorts"); ok {
+		err := json.Unmarshal([]byte(orderStr), &s)
+		if err != nil {
+			newlog.Logger.Errorf("failed to unmarshal sorts, err: %+v\n", err)
+		}
+	}
+	if conStr, ok := ctx.GetQuery("conditions"); ok {
+		err := json.Unmarshal([]byte(conStr), &conditons)
+		if err != nil {
+			newlog.Logger.Errorf("failed to unmarshal conditions, err: %+v\n", err)
+		}
+	}
+	if pageNumberStr, ok := ctx.GetQuery("page"); ok {
+		n, err := strconv.Atoi(pageNumberStr)
+		if err != nil {
+			newlog.Logger.Errorf("failed to get page number, err: %+v, then set pageNumber to 1\n", err)
+			n = 1
+		}
+		pageNumber = n
+	}
+	if pageSizeStr, ok := ctx.GetQuery("pageSize"); ok {
+		n, err := strconv.Atoi(pageSizeStr)
+		if err != nil {
+			newlog.Logger.Errorf("failed to get page size, err: %+v, then set pageSiz to 20\n", err)
+			n = 20
+		}
+		pageSize = n
 	}
 
+	page.Page = pageNumber
+	page.PageSize = pageSize
+	page.Sorts = s
+	page.Conditions = conditons
 	return page, nil
 }
 
@@ -53,7 +90,7 @@ func Order(sorts []Sort) func(db *gorm.DB) *gorm.DB {
 		resultDB := db
 		for _, sort := range sorts {
 			if sort.OrderBy == 1 {
-				resultDB.Order(sort.Field + " acs")
+				resultDB.Order(sort.Field + " asc")
 			}
 			if sort.OrderBy == -1 {
 				resultDB.Order(sort.Field + " desc")
@@ -78,7 +115,7 @@ func ParseQuery(q PageQuery) func(db *gorm.DB) *gorm.DB {
 func QueryFilter(key string, value interface{}, operation int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		resultDB := db
-		if value == "" {
+		if value == nil {
 			return resultDB
 		}
 		switch operation {
