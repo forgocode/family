@@ -5,30 +5,30 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/forgocode/family/internal/webservice/router/base"
+	"github.com/forgocode/family/internal/webservice/controller/comment"
+	"github.com/forgocode/family/internal/webservice/controller/topic"
+	"github.com/forgocode/family/internal/webservice/middleware"
+	"github.com/forgocode/family/internal/webservice/router/manager"
+	"github.com/gin-gonic/gin"
 )
 
 type CommentPlugin struct {
-	PluginName  string `json:"name" gorm:"column:name"`
-	Md5         string `json:"md5" gorm:"column:md5"`
-	Version     string `json:"version" gorm:"column:version"`
-	Author      string `json:"author" gorm:"author"`
-	Description string `json:"description" gorm:"description"`
-	Status      string `json:"status" gorm:"column:status"`
-	ExecPath    string `json:"execPath"`
-	ListenPort  int32
+	manager.BasePlugin
 }
 
 func init() {
 	p := &CommentPlugin{
-		PluginName:  "评论服务",
-		Version:     "0.0.1_base",
-		Author:      "forgocode",
-		Description: "用于评论文章，兴趣圈子",
-		ExecPath:    "",
-		ListenPort:  10002,
+		BasePlugin: manager.BasePlugin{
+			PluginName:   "评论服务",
+			Version:      "0.0.1_base",
+			Author:       "forgocode",
+			Description:  "用于评论文章，兴趣圈子",
+			ExecPath:     "",
+			PluginStatus: manager.Stopped,
+			ListenPort:   10002,
+		},
 	}
-	base.RegisterPlugin(p)
+	manager.RegisterPlugin(p)
 }
 
 func (p *CommentPlugin) Name() string {
@@ -50,8 +50,19 @@ func (p *CommentPlugin) Run() (*exec.Cmd, error) {
 	return cmd, nil
 }
 
-func (p *CommentPlugin) Router() []base.RouterInfo {
-	return []base.RouterInfo{}
+func (p *CommentPlugin) Router() []manager.RouterInfo {
+	return []manager.RouterInfo{
+		{Group: "normalUser", Path: "/comment", Method: "POST", Handles: []gin.HandlerFunc{comment.UserCreateComment}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "", Path: "/comment", Method: "GET", Handles: []gin.HandlerFunc{comment.UserGetComment}},
+		{Group: "", Path: "/firstcomment", Method: "GET", Handles: []gin.HandlerFunc{comment.UserGetFirstComment}},
+		{Group: "", Path: "/comment/child", Method: "GET", Handles: []gin.HandlerFunc{comment.UserGetChildComment}},
+
+		{Group: "normalUser", Path: "/topic", Method: "GET", Handles: []gin.HandlerFunc{topic.NormalGetAllTopic}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "admin", Path: "/topic", Method: "GET", Handles: []gin.HandlerFunc{topic.AdminGetAllTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/topic", Method: "POST", Handles: []gin.HandlerFunc{topic.AdminCreateTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/topic", Method: "PUT", Handles: []gin.HandlerFunc{topic.AdminUpdateTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/topic", Method: "DELETE", Handles: []gin.HandlerFunc{topic.AdminDeleteTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+	}
 }
 
 func (p *CommentPlugin) Uninstall() {

@@ -6,8 +6,15 @@ type Plugin struct {
 	Version     string `json:"version" gorm:"column:version"`
 	Author      string `json:"author" gorm:"author"`
 	Description string `json:"description" gorm:"description"`
-	Status      string `json:"status" gorm:"column:status"`
+	Status      int    `json:"status" gorm:"column:status"`
 }
+
+const (
+	Running = iota + 1
+	Stopped
+	Upgrading
+	Checking
+)
 
 func (Plugin) TableName() string {
 	return "plugin"

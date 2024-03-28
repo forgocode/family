@@ -5,30 +5,26 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/forgocode/family/internal/webservice/router/base"
+	"github.com/forgocode/family/internal/webservice/router/manager"
 )
 
 type LogPlugin struct {
-	PluginName  string `json:"name" gorm:"column:name"`
-	Md5         string `json:"md5" gorm:"column:md5"`
-	Version     string `json:"version" gorm:"column:version"`
-	Author      string `json:"author" gorm:"author"`
-	Description string `json:"description" gorm:"description"`
-	Status      string `json:"status" gorm:"column:status"`
-	ExecPath    string `json:"execPath"`
-	ListenPort  int32
+	manager.BasePlugin
 }
 
 func init() {
 	p := &LogPlugin{
-		PluginName:  "日志服务",
-		Version:     "0.0.1_base",
-		Author:      "forgocode",
-		Description: "用于通过grpc保存日志到mongo",
-		ExecPath:    "",
-		ListenPort:  10002,
+		BasePlugin: manager.BasePlugin{
+			PluginName:   "日志服务",
+			Version:      "0.0.1_base",
+			Author:       "forgocode",
+			Description:  "用于通过grpc保存日志到mongo",
+			ExecPath:     "",
+			PluginStatus: manager.Stopped,
+			ListenPort:   10002,
+		},
 	}
-	base.RegisterPlugin(p)
+	manager.RegisterPlugin(p)
 }
 
 func (p *LogPlugin) Name() string {
@@ -53,8 +49,8 @@ func (p *LogPlugin) Run() (*exec.Cmd, error) {
 	return cmd, nil
 }
 
-func (p *LogPlugin) Router() []base.RouterInfo {
-	return []base.RouterInfo{}
+func (p *LogPlugin) Router() []manager.RouterInfo {
+	return []manager.RouterInfo{}
 }
 
 func (p *LogPlugin) Uninstall() {

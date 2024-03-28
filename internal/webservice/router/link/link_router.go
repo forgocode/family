@@ -1,27 +1,28 @@
-package chat
+package link
 
 import (
 	"log"
 	"os/exec"
 	"strconv"
 
-	"github.com/forgocode/family/internal/webservice/controller/web_im"
+	"github.com/forgocode/family/internal/webservice/controller/like"
 	"github.com/forgocode/family/internal/webservice/middleware"
 	"github.com/forgocode/family/internal/webservice/router/manager"
 	"github.com/gin-gonic/gin"
 )
 
-type ChatPlugin struct {
+// 点赞，收藏，转发，
+type LinkPlugin struct {
 	manager.BasePlugin
 }
 
 func init() {
-	p := &ChatPlugin{
+	p := &LinkPlugin{
 		BasePlugin: manager.BasePlugin{
-			PluginName:   "聊天服务",
+			PluginName:   "互动服务",
 			Version:      "0.0.1_base",
 			Author:       "forgocode",
-			Description:  "用于网络聊天室，即时通讯",
+			Description:  "开启文章，圈子的点赞，收藏，转发功能",
 			ExecPath:     "",
 			PluginStatus: manager.Stopped,
 			ListenPort:   10002,
@@ -30,14 +31,11 @@ func init() {
 	manager.RegisterPlugin(p)
 }
 
-func (p *ChatPlugin) Name() string {
+func (p *LinkPlugin) Name() string {
 	return p.PluginName
 }
 
-func (p *ChatPlugin) Run() (*exec.Cmd, error) {
-	if p.ExecPath == "" {
-		return nil, nil
-	}
+func (p *LinkPlugin) Run() (*exec.Cmd, error) {
 	cmd := exec.Command(p.ExecPath, "-port", strconv.Itoa(int(p.ListenPort)))
 	err := cmd.Start()
 	if err != nil {
@@ -52,16 +50,17 @@ func (p *ChatPlugin) Run() (*exec.Cmd, error) {
 	return cmd, nil
 }
 
-func (p *ChatPlugin) Router() []manager.RouterInfo {
+func (p *LinkPlugin) Router() []manager.RouterInfo {
 	return []manager.RouterInfo{
-		{Group: "normalUser", Path: "/ws", Method: "GET", Handles: []gin.HandlerFunc{web_im.ReceiveClientComm}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "normalUser", Path: "/like", Method: "POST", Handles: []gin.HandlerFunc{like.GiveLike}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "normalUser", Path: "/unlike", Method: "POST", Handles: []gin.HandlerFunc{like.GiveLike}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
 	}
 }
 
-func (p *ChatPlugin) Uninstall() {
+func (p *LinkPlugin) Uninstall() {
 
 }
 
-func (p *ChatPlugin) Upgrade() {
+func (p *LinkPlugin) Upgrade() {
 
 }

@@ -3,13 +3,17 @@ package chat
 import (
 	"testing"
 	"time"
+
+	"github.com/forgocode/family/internal/webservice/router/manager"
 )
 
 func TestPluginRun(t *testing.T) {
 	p := &ChatPlugin{
-		ExecPath:   "/root/goWorkspace/family/bin/log_service",
-		PluginName: "log_Service",
-		ListenPort: 10002,
+		BasePlugin: manager.BasePlugin{
+			ExecPath:   "/root/goWorkspace/family/bin/log_service",
+			PluginName: "log_Service",
+			ListenPort: 10002,
+		},
 	}
 	p.Run()
 

@@ -5,30 +5,29 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/forgocode/family/internal/webservice/router/base"
+	"github.com/forgocode/family/internal/webservice/controller/group"
+	"github.com/forgocode/family/internal/webservice/middleware"
+	"github.com/forgocode/family/internal/webservice/router/manager"
+	"github.com/gin-gonic/gin"
 )
 
 type GroupPlugin struct {
-	PluginName  string `json:"name" gorm:"column:name"`
-	Md5         string `json:"md5" gorm:"column:md5"`
-	Version     string `json:"version" gorm:"column:version"`
-	Author      string `json:"author" gorm:"author"`
-	Description string `json:"description" gorm:"description"`
-	Status      string `json:"status" gorm:"column:status"`
-	ExecPath    string `json:"execPath"`
-	ListenPort  int32
+	manager.BasePlugin
 }
 
 func init() {
 	p := &GroupPlugin{
-		PluginName:  "群组服务",
-		Version:     "0.0.1_base",
-		Author:      "forgocode",
-		Description: "激活群组功能，进行群聊",
-		ExecPath:    "",
-		ListenPort:  10002,
+		BasePlugin: manager.BasePlugin{
+			PluginName:   "群组服务",
+			Version:      "0.0.1_base",
+			Author:       "forgocode",
+			Description:  "激活群组功能，进行群聊",
+			ExecPath:     "",
+			PluginStatus: manager.Stopped,
+			ListenPort:   10002,
+		},
 	}
-	base.RegisterPlugin(p)
+	manager.RegisterPlugin(p)
 }
 
 func (p *GroupPlugin) Name() string {
@@ -50,8 +49,11 @@ func (p *GroupPlugin) Run() (*exec.Cmd, error) {
 	return cmd, nil
 }
 
-func (p *GroupPlugin) Router() []base.RouterInfo {
-	return []base.RouterInfo{}
+func (p *GroupPlugin) Router() []manager.RouterInfo {
+	return []manager.RouterInfo{
+		{Group: "normalUser", Path: "/grouplist", Method: "GET", Handles: []gin.HandlerFunc{group.GetAllGroupByUserUID}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "normalUser", Path: "/groupmember/:id", Method: "GET", Handles: []gin.HandlerFunc{group.GetMemberByGroupUID}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+	}
 }
 
 func (p *GroupPlugin) Uninstall() {

@@ -1,123 +1,93 @@
-package base
+package friend
 
 import (
+	"log"
 	"os/exec"
-	"sync"
+	"strconv"
 
+	"github.com/forgocode/family/internal/webservice/controller/plugin"
+	"github.com/forgocode/family/internal/webservice/controller/statistic"
+	"github.com/forgocode/family/internal/webservice/controller/system"
+	"github.com/forgocode/family/internal/webservice/controller/user"
+	"github.com/forgocode/family/internal/webservice/middleware"
+	"github.com/forgocode/family/internal/webservice/router/manager"
 	"github.com/gin-gonic/gin"
 )
 
-type Plugin interface {
-	Run() (*exec.Cmd, error)
-	Uninstall()
-	Upgrade()
-	Name() string
-	Router() []RouterInfo
+type BasePlugin struct {
+	manager.BasePlugin
 }
 
-type RouterInfo struct {
-	Group      string
-	Path       string
-	Method     string
-	Handles    []gin.HandlerFunc
-	Middleware []gin.HandlerFunc
-}
-
-const (
-	Running = iota + 1
-	Initing
-	Stopped
-	Upgrading
-)
-
-func RegisterPlugin(p Plugin) {
-	pluginManagerCenter.RegisterPlugin(p)
-}
-
-func RegisterRouter(engine *gin.Engine) {
-	// 注册插件管理的路由
-	pluginManagerCenter.RegisterRouter(engine)
-
-}
-
-func (m *pluginManager) RegisterRouter(engine *gin.Engine) {
-	pluginManagerCenter.mu.Lock()
-	defer pluginManagerCenter.mu.Unlock()
-	for p, _ := range pluginManagerCenter.items {
-		// if s.status != Running {
-		// 	continue
-		// }
-		for _, r := range p.Router() {
-			switch r.Method {
-			case "GET":
-				engine.Group(r.Group).Use(r.Middleware...).GET(r.Path, r.Handles...)
-			case "POST":
-				engine.Group(r.Group).Use(r.Middleware...).POST(r.Path, r.Handles...)
-			case "PUT":
-				engine.Group(r.Group).Use(r.Middleware...).PUT(r.Path, r.Handles...)
-			case "DELETE":
-				engine.Group(r.Group).Use(r.Middleware...).DELETE(r.Path, r.Handles...)
-			}
-		}
+func init() {
+	p := &BasePlugin{
+		BasePlugin: manager.BasePlugin{
+			PluginName:   "基础服务",
+			Version:      "0.0.1_base",
+			Author:       "forgocode",
+			Description:  "基础设施，提供基础的系统设施",
+			ExecPath:     "",
+			PluginStatus: manager.Running,
+			ListenPort:   10002,
+		},
 	}
+	manager.RegisterPlugin(p)
 }
 
-type pluginManager struct {
-	mu    sync.RWMutex
-	items map[Plugin]PluginInfo
+func (p *BasePlugin) Name() string {
+	return p.PluginName
 }
 
-type PluginInfo struct {
-	cmdInfo *exec.Cmd
-	status  int
-}
-
-var pluginManagerCenter = &pluginManager{
-	mu:    sync.RWMutex{},
-	items: make(map[Plugin]PluginInfo),
-}
-
-func (m *pluginManager) RegisterPlugin(p Plugin) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	info := PluginInfo{
-		cmdInfo: nil,
-		status:  Initing,
+func (p *BasePlugin) Run() (*exec.Cmd, error) {
+	cmd := exec.Command(p.ExecPath, "-port", strconv.Itoa(int(p.ListenPort)))
+	err := cmd.Start()
+	if err != nil {
+		return nil, err
 	}
-
-	m.items[p] = info
-}
-
-func (m *pluginManager) Load(name string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	for k, v := range m.items {
-		if k.Name() != name {
-			continue
-		}
-		cmd, err := k.Run()
+	go func() {
+		err := cmd.Wait()
 		if err != nil {
-			return err
+			log.Printf("failed to wait plugin: %+v, err: %+v\n", p, err)
 		}
-		v.cmdInfo = cmd
-		v.status = Running
-		m.items[k] = v
-	}
-	return nil
+	}()
+	return cmd, nil
 }
 
-func (m *pluginManager) UnLoad(name string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	for k, v := range m.items {
-		if k.Name() != name {
-			continue
-		}
-		if v.status != Running {
-			continue
-		}
-		//TODO: ?可以取消吗
-		return v.cmdInfo.Cancel()
+func (p *BasePlugin) Router() []manager.RouterInfo {
+	return []manager.RouterInfo{
+		{Group: "", Path: "/register", Method: "POST", Handles: []gin.HandlerFunc{system.Register}},
+		{Group: "", Path: "/login", Method: "POST", Handles: []gin.HandlerFunc{system.Login}},
+
+		{Group: "admin", Path: "/user", Method: "GET", Handles: []gin.HandlerFunc{user.NormalGetAllUser}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/user", Method: "PUT", Handles: []gin.HandlerFunc{user.AdminUpdateUser}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/user", Method: "POST", Handles: []gin.HandlerFunc{user.AdminCreateUser}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/user", Method: "DELETE", Handles: []gin.HandlerFunc{user.AdminDeleteUser}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "normalUser", Path: "/info", Method: "GET", Handles: []gin.HandlerFunc{user.AdminGetUserInfo}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+
+		{Group: "admin", Path: "/operationLog", Method: "GET", Handles: []gin.HandlerFunc{system.AdminGetOperationLog}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+
+		{Group: "admin", Path: "/statistic/counts", Method: "GET", Handles: []gin.HandlerFunc{statistic.Counts}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/usertrend", Method: "GET", Handles: []gin.HandlerFunc{statistic.UserAddTrend}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/articletrend", Method: "GET", Handles: []gin.HandlerFunc{statistic.ArticleAddTrend}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/topictop5", Method: "GET", Handles: []gin.HandlerFunc{statistic.TopicTOP5}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/tagtop5", Method: "GET", Handles: []gin.HandlerFunc{statistic.TagTOP5}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/categorytop5", Method: "GET", Handles: []gin.HandlerFunc{statistic.CategoryTOP5}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/scoretop10", Method: "GET", Handles: []gin.HandlerFunc{statistic.ScoreTop10}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/statistic/userActive30", Method: "GET", Handles: []gin.HandlerFunc{statistic.UserActive30}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+
+		{Group: "admin", Path: "/version", Method: "GET", Handles: []gin.HandlerFunc{system.GetVersion}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/monitor", Method: "GET", Handles: []gin.HandlerFunc{system.GetMonitor}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+
+		{Group: "admin", Path: "/plugin", Method: "GET", Handles: []gin.HandlerFunc{plugin.AdminGetAllPlugin}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/plugin", Method: "PUT", Handles: []gin.HandlerFunc{plugin.AdminUpdatePlugin}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/plugin", Method: "POST", Handles: []gin.HandlerFunc{plugin.AdminCreatePlugin}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "admin", Path: "/plugin", Method: "DELETE", Handles: []gin.HandlerFunc{plugin.AdminDeletePlugin}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
 	}
-	return nil
+}
+
+func (p *BasePlugin) Uninstall() {
+
+}
+
+func (p *BasePlugin) Upgrade() {
+
 }

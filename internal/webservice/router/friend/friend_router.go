@@ -5,30 +5,26 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/forgocode/family/internal/webservice/router/base"
+	"github.com/forgocode/family/internal/webservice/router/manager"
 )
 
 type FriendPlugin struct {
-	PluginName  string `json:"name" gorm:"column:name"`
-	Md5         string `json:"md5" gorm:"column:md5"`
-	Version     string `json:"version" gorm:"column:version"`
-	Author      string `json:"author" gorm:"author"`
-	Description string `json:"description" gorm:"description"`
-	Status      string `json:"status" gorm:"column:status"`
-	ExecPath    string `json:"execPath"`
-	ListenPort  int32
+	manager.BasePlugin
 }
 
 func init() {
 	p := &FriendPlugin{
-		PluginName:  "好友服务",
-		Version:     "0.0.1_base",
-		Author:      "forgocode",
-		Description: "激活好友功能，可以添加好友",
-		ExecPath:    "",
-		ListenPort:  10002,
+		BasePlugin: manager.BasePlugin{
+			PluginName:   "好友服务",
+			Version:      "0.0.1_base",
+			Author:       "forgocode",
+			Description:  "激活好友功能，可以添加好友",
+			ExecPath:     "",
+			PluginStatus: manager.Stopped,
+			ListenPort:   10002,
+		},
 	}
-	base.RegisterPlugin(p)
+	manager.RegisterPlugin(p)
 }
 
 func (p *FriendPlugin) Name() string {
@@ -50,8 +46,8 @@ func (p *FriendPlugin) Run() (*exec.Cmd, error) {
 	return cmd, nil
 }
 
-func (p *FriendPlugin) Router() []base.RouterInfo {
-	return []base.RouterInfo{}
+func (p *FriendPlugin) Router() []manager.RouterInfo {
+	return []manager.RouterInfo{}
 }
 
 func (p *FriendPlugin) Uninstall() {
