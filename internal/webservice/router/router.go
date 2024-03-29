@@ -14,7 +14,7 @@ func Start() {
 	gin.SetMode(bininfo.GinLogMode)
 	bininfo.StartTime = time.Now().UnixMilli()
 	engine := gin.New()
-	engine.Use(middleware.Logger(), middleware.Recovery())
+	engine.Use(middleware.Logger(), middleware.Recovery(), middleware.RouterManager())
 
 	manager.RegisterRouter(engine)
 

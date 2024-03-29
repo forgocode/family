@@ -57,11 +57,11 @@ func (p *CommentPlugin) Router() []manager.RouterInfo {
 		{Group: "", Path: "/firstcomment", Method: "GET", Handles: []gin.HandlerFunc{comment.UserGetFirstComment}},
 		{Group: "", Path: "/comment/child", Method: "GET", Handles: []gin.HandlerFunc{comment.UserGetChildComment}},
 
-		{Group: "normalUser", Path: "/topic", Method: "GET", Handles: []gin.HandlerFunc{topic.NormalGetAllTopic}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
-		{Group: "admin", Path: "/topic", Method: "GET", Handles: []gin.HandlerFunc{topic.AdminGetAllTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
-		{Group: "admin", Path: "/topic", Method: "POST", Handles: []gin.HandlerFunc{topic.AdminCreateTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
-		{Group: "admin", Path: "/topic", Method: "PUT", Handles: []gin.HandlerFunc{topic.AdminUpdateTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
-		{Group: "admin", Path: "/topic", Method: "DELETE", Handles: []gin.HandlerFunc{topic.AdminDeleteTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "/normalUser", Path: "/topic", Method: "GET", Handles: []gin.HandlerFunc{topic.NormalGetAllTopic}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "/admin", Path: "/topic", Method: "GET", Handles: []gin.HandlerFunc{topic.AdminGetAllTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "/admin", Path: "/topic", Method: "POST", Handles: []gin.HandlerFunc{topic.AdminCreateTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "/admin", Path: "/topic", Method: "PUT", Handles: []gin.HandlerFunc{topic.AdminUpdateTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
+		{Group: "/admin", Path: "/topic", Method: "DELETE", Handles: []gin.HandlerFunc{topic.AdminDeleteTopic}, Middleware: []gin.HandlerFunc{middleware.AuthAdmin()}},
 	}
 }
 

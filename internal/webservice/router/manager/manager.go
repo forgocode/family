@@ -76,9 +76,7 @@ func (m *pluginManager) RegisterRouter(engine *gin.Engine) {
 	defer pluginManagerCenter.mu.Unlock()
 	for p, s := range pluginManagerCenter.items {
 		plugin.CreatePlugin(p.Convert())
-		if s.status != Running {
-			continue
-		}
+
 		for _, r := range p.Router() {
 			switch r.Method {
 			case "GET":
@@ -90,13 +88,30 @@ func (m *pluginManager) RegisterRouter(engine *gin.Engine) {
 			case "DELETE":
 				engine.Group(r.Group).Use(r.Middleware...).DELETE(r.Path, r.Handles...)
 			}
+			if s.status != Running {
+				routerManagerCenter.items.Store(r.Group+r.Path, false)
+				continue
+			}
+			routerManagerCenter.items.Store(r.Group+r.Path, true)
 		}
 	}
+}
+
+func ISRouterPass(path string) bool {
+	v, ok := routerManagerCenter.items.Load(path)
+	if !ok {
+		return false
+	}
+	return v.(bool)
 }
 
 type pluginManager struct {
 	mu    sync.RWMutex
 	items map[Plugin]PluginInfo
+}
+
+type RouterManaget struct {
+	items sync.Map
 }
 
 type PluginInfo struct {
@@ -107,6 +122,10 @@ type PluginInfo struct {
 var pluginManagerCenter = &pluginManager{
 	mu:    sync.RWMutex{},
 	items: make(map[Plugin]PluginInfo),
+}
+
+var routerManagerCenter = &RouterManaget{
+	items: sync.Map{},
 }
 
 func (m *pluginManager) RegisterPlugin(p Plugin) {

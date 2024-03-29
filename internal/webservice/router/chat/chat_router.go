@@ -54,7 +54,7 @@ func (p *ChatPlugin) Run() (*exec.Cmd, error) {
 
 func (p *ChatPlugin) Router() []manager.RouterInfo {
 	return []manager.RouterInfo{
-		{Group: "normalUser", Path: "/ws", Method: "GET", Handles: []gin.HandlerFunc{web_im.ReceiveClientComm}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "/normalUser", Path: "/ws", Method: "GET", Handles: []gin.HandlerFunc{web_im.ReceiveClientComm}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
 	}
 }
 

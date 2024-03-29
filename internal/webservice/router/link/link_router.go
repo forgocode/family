@@ -52,8 +52,8 @@ func (p *LinkPlugin) Run() (*exec.Cmd, error) {
 
 func (p *LinkPlugin) Router() []manager.RouterInfo {
 	return []manager.RouterInfo{
-		{Group: "normalUser", Path: "/like", Method: "POST", Handles: []gin.HandlerFunc{like.GiveLike}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
-		{Group: "normalUser", Path: "/unlike", Method: "POST", Handles: []gin.HandlerFunc{like.GiveLike}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "/normalUser", Path: "/like", Method: "POST", Handles: []gin.HandlerFunc{like.GiveLike}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "/normalUser", Path: "/unlike", Method: "POST", Handles: []gin.HandlerFunc{like.GiveLike}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
 	}
 }
 

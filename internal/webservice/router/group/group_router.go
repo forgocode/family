@@ -51,8 +51,8 @@ func (p *GroupPlugin) Run() (*exec.Cmd, error) {
 
 func (p *GroupPlugin) Router() []manager.RouterInfo {
 	return []manager.RouterInfo{
-		{Group: "normalUser", Path: "/grouplist", Method: "GET", Handles: []gin.HandlerFunc{group.GetAllGroupByUserUID}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
-		{Group: "normalUser", Path: "/groupmember/:id", Method: "GET", Handles: []gin.HandlerFunc{group.GetMemberByGroupUID}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "/normalUser", Path: "/grouplist", Method: "GET", Handles: []gin.HandlerFunc{group.GetAllGroupByUserUID}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
+		{Group: "/normalUser", Path: "/groupmember/:id", Method: "GET", Handles: []gin.HandlerFunc{group.GetMemberByGroupUID}, Middleware: []gin.HandlerFunc{middleware.AuthNormal()}},
 	}
 }
 
